@@ -6,7 +6,7 @@ Grupo nº
 **Integrantes**
 
 - Daniel Ferreira - dandastico.bsb@gmail.com
-- Filipe Peres -
+- Filipe Peres - filipe98.peres@gmail.com
 - Gabriel Republicano - 
 - Gabriel Oliveira - 
 
