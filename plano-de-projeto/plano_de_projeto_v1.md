@@ -58,5 +58,38 @@ Limitações:
 
 ### 3.1 Escopo do Produto (Requisitos Funcionais)
 
-- RF01 - Manter cadastro de usuário
-    - RF01.1 - 
+- RF01 - Manter Cadastro de Usuário
+    - RF01.1 - Consultar Usuário
+    - RF01.2 - Cadastrar Usuário
+    - RF01.3 - Validar E-mail
+        - Gerar link de validação, enviar por e-mail
+    - RF01.4 - Editar Usuário
+
+- RF02 - Gerenciar Login do Usuário
+    - RF02.1 - Validar Credencial
+    - RF02.2 - Redefinir Senha
+
+- RF03 - Gerenciar Artigos da Base de Conhecimento
+    - RF03.1 - Criar Artigos
+    - RF03.2 - Editar Artigo
+    - RF03.3 - Excluir Artigo
+    - RF03.4 - Publicar/Ocultar Artigo
+    - RF03.5 - Programar Publicação
+    - RF03.6 - Associar Artigos à Seções ou Categorias
+
+- RF04 - Gerenciar Disciplinas Matriculadas
+    - RF04.1 - Cadastrar Disciplina
+    - RF04.2 - Editar Disciplina
+    - RF04.3 - Excluir Disciplina
+    - RF04.4 - Deifinir Total de Aulas da Disciplina
+
+- RF05 - Gerenciar Calculadora de Média
+    - RF05.1 - Inserir Notas da Disciplina com seus pesos
+    - RF05.2 - Calcular Média da Disciplina
+    - RF05.3 - Exibir Situação do Aluno na Disciplina (Em curso/Aprovado/Recuperação/Reprovado)
+
+- RF06 - Gerenciar Acompanhamento de Presença
+    - RF06.1 - Registrar Presença ou Falta em Aula
+    - RF06.2 - Calcular Percentual de Frequência
+    - RF06.3 - Exibir Situação de Frequência do Aluno (Aprovado/Reprovado/Em risco)
+
