@@ -14,6 +14,8 @@ Grupo nº
 
 Prof. João Gabriel Alvares
 
+[Repositório Online](https://github.com/Dandastico/SENAC_Lab4_GuiaDoAlunoDigital/tree/main)
+
 ## 1. INTRODUÇÃO
 
 O presente documento constitui o Plano de Projeto para o desenvolvimento do Guia Estudantil Digital da Faculdade de Tecnologia e Inovação SENAC-DF. O objetivo primordial do projeto é aprimorar a experiência do estudante da faculdade, disponibilizando informações de interesse dos alunos e funcionalidades úteis como Calculadora de Média e Acompanhamento de Presença.
