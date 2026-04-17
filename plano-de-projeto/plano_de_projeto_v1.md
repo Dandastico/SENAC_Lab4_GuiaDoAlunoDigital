@@ -1,7 +1,7 @@
 # Guia do Aluno Digital – Facilitando a Vida do Aluno
 
 ### Especificação e Protótipos
-Grupo nº
+Grupo: Churros Mágico
 
 **Integrantes**
 
@@ -45,18 +45,18 @@ Guia Estudantil Digital FACSENAC-DF
 
 Funcionalidades principais:
 
-- **Base de Conhecimento (Artigos):** Espaço para criar, manter e gerenciar artigos explicando regras da faculdade e informações relevantes para os alunos, sem necessidade de autenticação para a leitura.
-- **Calculadora de Média:** Ferramenta para o aluno o aluno calcular suas médias acadêmicas.
-- **Acompanhamento de Presença (Frequência):** Espaço para o aluno gerenciar e acompanhar sua frequência nas disciplinas matriculadas.
-- **Autenticação de Usuário:** Login opcional que, quando feito, desbloqueia as funcionalidades personalizadas
+- Base de Conhecimento (Artigos): Espaço para criar, manter e gerenciar artigos explicando regras da faculdade e informações relevantes para os alunos, sem necessidade de autenticação para a leitura.
+- Calculadora de Média: Ferramenta para o aluno o aluno calcular suas médias acadêmicas.
+- Acompanhamento de Presença (Frequência): Espaço para o aluno gerenciar e acompanhar sua frequência nas disciplinas matriculadas.
+- Autenticação de Usuário: Login opcional que, quando feito, desbloqueia as funcionalidades personalizadas
 
 Limitações:
 
-- **Público-alvo Inicial:** Versão 1.0 focada nos alunos do curso de Análise e Desenvolvimento de Sistemas do FACSENAC-DF
-- **Conteúdo:** Artigos da Base de Conhecimento limitados às regras e informações do FACSENAC-DF, sem considerar as outras unidades do SENAC
-- **Funcionalidades Personalizadas:** Calculadora de Média e Acompanhamento de Presença disponíveis apenas para usuários autenticados
-- **Cálculo de Mèdia:** Cálculo automático sem sem integração direta com o sistema acadêmico da faculdade (sem conexão com APIs oficiais ou outros métodos de importação de notas)
-- **Presença:** Gerenciamento manual pelo aluno, sem sincronização com registros oficiais de frequência da instituição
+- Público-alvo Inicial: Versão 1.0 focada nos alunos do curso de Análise e Desenvolvimento de Sistemas do FACSENAC-DF
+- Conteúdo: Artigos da Base de Conhecimento limitados às regras e informações do FACSENAC-DF, sem considerar as outras unidades do SENAC
+- Funcionalidades Personalizadas: Calculadora de Média e Acompanhamento de Presença disponíveis apenas para usuários autenticados
+- Cálculo de Mèdia: Cálculo automático sem sem integração direta com o sistema acadêmico da faculdade (sem conexão com APIs oficiais ou outros métodos de importação de notas)
+- Presença: Gerenciamento manual pelo aluno, sem sincronização com registros oficiais de frequência da instituição
 
 ### 3.1 Escopo do Produto (Requisitos Funcionais)
 
@@ -94,4 +94,6 @@ Limitações:
     - RF06.1 - Registrar Presença ou Falta em Aula
     - RF06.2 - Calcular Percentual de Frequência
     - RF06.3 - Exibir Situação de Frequência do Aluno (Aprovado/Reprovado/Em risco)
+
+## ESPECIFICAÇÃO DOS REQUISITOS
 
