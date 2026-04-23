@@ -139,3 +139,14 @@ Desenvolver e lançar a versão 1.0 do Guia Estudantil Difital da FACSENAC-DF (u
 ### 4.2 Justificativa
 
 A informação institucional da FACSENAC-DF encontra-se dispersa entre grupos de WhatsApp, PDFs desatualizados e e-mails, gerando dúvidas recorrentes que sobrecarregam os setories administrativos e os professores em sala de aula, além de dificultar a auto-gestão da vida acadêmica pelos alunos. O Guia Estudantil Digital surge como resposta a esse cenário, centralizando as informações institucionais em um aplicativo Android de fácil acesso, com conteúdo atualizável em tempo real e ferramentes práticas como Calculadora de Média e Acompanhamento de Presença, seguindo modelos já consolidados por plataformas com centrais de ajuda de referência como Meta, Brevo e Mozilla.
+
+### 4.3 Benefícios
+
+**O quê?** Software que centraliza e organiza as informações institucionais da FACSENAC-DF em uma única plataforma (aplicativo Android e base de conhecimento web) para consulta de regras, normas e informações acadêmicas, além de ferramentas de apoio à gestão da vida estudantil.
+
+**Quais necessidades serão atendidas?**
+
+- **Ganhos para a Instituição:** redução do volume de dúvidas direcionadas à Secretaria Acadêmica e ao setor Financeiro, diminuição da circulação de informações desatualizadas ou incorretas entre os alunos, e maior agilidade na atualização e disseminação de comunicados e normas institucionais.
+- **Ganhos para o Aluno:** acesso rápido e centralizado a informações acadêmicas sem depender de atendimento ou remoto, autonomia para calcular médias e acompanhar a própria frequência, e facilidade para consultar regras e regulamentos a qualquer hora e lugar diretamente pelo celular.
+
+
