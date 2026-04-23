@@ -129,3 +129,12 @@ A estrutura do Guia Digital Estudantil envolve os seguintes gastos:
 ### 3.9 Fontes de Renda/Receita
 
 O Guia Estudantil Digital não possui fonte de receita direta, sendo caracterizado como ferramenta institucional de uso interno. O retorno esperado é de natureza operacional e qualificativa: redução do volume de dúvidas direcionadas à Secretaria Acadêmica e ao setor Financeiro, melhoria na experiência do aluno e maior eficiência na disseminação de informações intitucionais. **Os custos de manutenção da plataforma devem ser absorvidos pela FACSENAC-DF como investimento em infraestrutura de comunicação interna.**
+
+## 4. PROJECT CANVAS
+
+### 4.1 Objetivo SMART
+
+Desenvolver e lançar a versão 1.0 do Guia Estudantil Difital da FACSENAC-DF (um aplicativo móvel Android com Base de Conhecimento Institucional, Calculadora de Média e Acompanhamento de Presença) até 26 de junho de 2026, atendendo inicialmente os alunos do curso de Análise e Desenvolvimento de Sistemas, com o objetivo de reduzir em pelo menos 30% o volume de dúvidas básicas direcionadas à Secretaria Acadêmica e ao setor Financeiro no primeiro semestre após o lançamento.
+
+### 4.2 Justificativa
+
