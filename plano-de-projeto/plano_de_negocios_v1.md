@@ -142,10 +142,10 @@ A informação institucional da FACSENAC-DF encontra-se dispersa entre grupos de
 
 ### 4.3 Benefícios
 
-**O quê?** Software que centraliza e organiza as informações institucionais da FACSENAC-DF em uma única plataforma (aplicativo Android e base de conhecimento web) para consulta de regras, normas e informações acadêmicas, além de ferramentas de apoio à gestão da vida estudantil.
+**O que é?**
+- Software que centraliza e organiza as informações institucionais da FACSENAC-DF em uma única plataforma (aplicativo Android e base de conhecimento web) para consulta de regras, normas e informações acadêmicas, além de ferramentas de apoio à gestão da vida estudantil.
 
 **Quais necessidades serão atendidas?**
-
 - **Ganhos para a Instituição:** redução do volume de dúvidas direcionadas à Secretaria Acadêmica e ao setor Financeiro, diminuição da circulação de informações desatualizadas ou incorretas entre os alunos, e maior agilidade na atualização e disseminação de comunicados e normas institucionais.
 - **Ganhos para o Aluno:** acesso rápido e centralizado a informações acadêmicas sem depender de atendimento ou remoto, autonomia para calcular médias e acompanhar a própria frequência, e facilidade para consultar regras e regulamentos a qualquer hora e lugar diretamente pelo celular.
 
