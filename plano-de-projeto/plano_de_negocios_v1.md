@@ -149,4 +149,12 @@ A informação institucional da FACSENAC-DF encontra-se dispersa entre grupos de
 - **Ganhos para a Instituição:** redução do volume de dúvidas direcionadas à Secretaria Acadêmica e ao setor Financeiro, diminuição da circulação de informações desatualizadas ou incorretas entre os alunos, e maior agilidade na atualização e disseminação de comunicados e normas institucionais.
 - **Ganhos para o Aluno:** acesso rápido e centralizado a informações acadêmicas sem depender de atendimento ou remoto, autonomia para calcular médias e acompanhar a própria frequência, e facilidade para consultar regras e regulamentos a qualquer hora e lugar diretamente pelo celular.
 
+### 4.4 Características do Produto / Serviço
 
+O Guia Estudantil Digital é uma plataforma de centralização de informações acadêmicas da FACSENAC-DF com as seguintes caracterísitcas:
+- **Base de Conhecimento Institucional:** centraliza artigos sobre regras, normas e informações da faculdade em uma única plataforma digital, eliminando a dispersão de informações entre PDFs, grupos de WhatsApp e atendimento presenciais. O conteúdo é acessível sem necessidade de autenticação.
+- **Calculadora de Média:** ferramenta que permite ao aluno calcular sua média acadêmica de forma rápida e autônoma, sem depender de atendimento da Secretaria Acadêmica ou da ajuda dos professores.
+- **Acompanhamento de Presença:** funcionalidade para que o plano monitore sua própria frequência nas disciplinas, auxiliando na auto-gestão acadêmica. Embora não terá peso oficial perante a faculdade, a funcionalidade ajuda os alunos a melhore se programarem durante o semestre.
+- **Gestão de Conteúdo (CMS):** interface para que gestores e administradores da faculdade criem, editem e publiquem artigos na base de conhecimento, mantendo as informações sempre atualizadas.
+- **Notificações Personalizadas:** envio de lembretes automáticos aos alunos autenticados sobre situação acadêmica e atualizações importantes de informações institucionais.
+- **Suporte Multicanal:** canais de suporte ao usuário via aplicativo e WhatsApp para auxiliar na utilização da plataforma, retirada de dúvidas e captação de feedbacks.
