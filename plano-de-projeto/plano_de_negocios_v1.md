@@ -158,3 +158,4 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 - **Gestão de Conteúdo (CMS):** interface para que gestores e administradores da faculdade criem, editem e publiquem artigos na base de conhecimento, mantendo as informações sempre atualizadas.
 - **Notificações Personalizadas:** envio de lembretes automáticos aos alunos autenticados sobre situação acadêmica e atualizações importantes de informações institucionais.
 - **Suporte Multicanal:** canais de suporte ao usuário via aplicativo e WhatsApp para auxiliar na utilização da plataforma, retirada de dúvidas e captação de feedbacks.
+
