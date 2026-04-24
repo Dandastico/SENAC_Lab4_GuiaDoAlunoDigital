@@ -53,6 +53,7 @@ As relações com os usuários do Guia Estudantil Digital serão estabelecidos e
 
 Os seguintes canais serão utilizados:
 - Aplicativo Móvel: Disponível para download em lojas de aplicativo Android.
+- Portal Web: Acesso ao portal por navegadores modernos.
 - Parcerias Institucionais: Divulgação nos ambientes físicos e digitais da faculdade, informando os interessados os serviços disponíveis.
 - Mídia Digital e Social: Campanhas de marketing digital e presença em redes sociais para alcançar o público-alvo e disseminar informações relevantes.
 
@@ -69,15 +70,15 @@ O Guia Estudantil Digital pretende atingir os seguintes segmentos:
 As parcerias chaves para o sucesso do projeto incluem:
 - FACSENAC-DF (Instituição): A própria faculdade é a parceria mais crítica. Ela fornece as informações oficiais que alimentarão a Base de Conhecimento, validar o conteúdo publicado, e dar aval institucional para que a plataforma seja divulgada e adotada como um dos sistemas oficiais a serem adotadas pelos alunos. Sem esse respaldo, a plataforma perde credibilidade.
 - Provedor de Hospedagem (AWS, Google Cloud, Vercel): Hospedar a aplicação e garantir disponibilidade e escalabilidade da plataforma.
-- Serviço de Envio de E-mails (SenfGrid, Brevo, ReSend): Necessário para o fluxo de validação de e-mail e redeficinição de senha, que são requisitos funcionais no projeto. Também é importante para envio de notificações e avisos para os usuários autenticados.
-- Google Play Sotre: Essencial para disponibilização do aplicativo móvel Android.
+- Serviço de Envio de E-mails (SendGrid, Brevo, ReSend): Necessário para o fluxo de validação de e-mail e redeficinição de senha, que são requisitos funcionais no projeto. Também é importante para envio de notificações e avisos para os usuários autenticados.
+- Google Play Store: Essencial para disponibilização do aplicativo móvel Android.
 
 ### 3.6 Atividades-Chaves (Principais)
 
 As principais atividades do Guia Estudantil Digital são:
 - CMS (Content Management System): Criação, revisão e atualização dos artigos da Base de Conhecimento, mantendo as informações institucionais sempre precisas e alinhadas às políticas vigentes do FACSENAC-DF. Moderação e controle de qualidade do conteúdo publicado
 - Suporte ao Usuário: Atendimento e suporte multicanal aos usuários (via aplicativo e WhatsApp)
-- Desenvolvimetno e Manutenção da Plataforma: Desenvolvimento e evolução contínua do aplicativo móvel
+- Desenvolvimento e Manutenção da Plataforma: Desenvolvimento e evolução contínua do aplicativo móvel
 
 ### 3.7 Recursos-Chaves (Principais)
 
@@ -86,7 +87,7 @@ Os recursos-chaves necessários para o desenvolvimento do Guia Estudantil Digita
 - Administrador de Conteúdo: Responsável, vinculado ao FACSENAC-DF, responsável pela criação, revisão e atualização dos artigos da Base de Conhecimento
 - Recursos Tecnológicos
   - Infraestrutura de hospedagem em nuvem para disponibilidade da plataforma
-  - Serviço de envio de e-mails transacionais para autenticaç~çao e notificações
+  - Serviço de envio de e-mails transacionais para autenticação e notificações
   - Repositório de código-fonte para versionamento e colaboração da equipe de desenvolvimento
 - Recursos Intelectuais
   - Base de Conhecimento: Acervo de artigos institucionais é o principal ativo de valor da plataforma
@@ -114,7 +115,7 @@ A estrutura do Guia Digital Estudantil envolve os seguintes gastos:
 |Hospedagem em nuvem (Vercel/Render) | Plano básico para aplicação web | ~R$ 100 |
 | Serviço de e-mail transacional | Plano para até 20 mil e-mails mensais | ~R$ 50 |
 | Domínio | Registro anual dividido mensalmente | ~R$ 3,34 |
-| **Subtotal Infraestrutura** | | **~R$ 153,34** |
+| **Subtotal Infraestrutura** | | **~R$ 306,683** |
 
 <br>
 
@@ -154,7 +155,7 @@ A informação institucional da FACSENAC-DF encontra-se dispersa entre grupos de
 O Guia Estudantil Digital é uma plataforma de centralização de informações acadêmicas da FACSENAC-DF com as seguintes caracterísitcas:
 - **Base de Conhecimento Institucional:** centraliza artigos sobre regras, normas e informações da faculdade em uma única plataforma digital, eliminando a dispersão de informações entre PDFs, grupos de WhatsApp e atendimento presenciais. O conteúdo é acessível sem necessidade de autenticação.
 - **Calculadora de Média:** ferramenta que permite ao aluno calcular sua média acadêmica de forma rápida e autônoma, sem depender de atendimento da Secretaria Acadêmica ou da ajuda dos professores.
-- **Acompanhamento de Presença:** funcionalidade para que o plano monitore sua própria frequência nas disciplinas, auxiliando na auto-gestão acadêmica. Embora não terá peso oficial perante a faculdade, a funcionalidade ajuda os alunos a melhore se programarem durante o semestre.
+- **Acompanhamento de Presença:** funcionalidade para que o aluno monitore sua própria frequência nas disciplinas, auxiliando na auto-gestão acadêmica. Embora não terá peso oficial perante a faculdade, a funcionalidade ajuda os alunos a melhor se programarem durante o semestre.
 - **Gestão de Conteúdo (CMS):** interface para que gestores e administradores da faculdade criem, editem e publiquem artigos na base de conhecimento, mantendo as informações sempre atualizadas.
 - **Notificações Personalizadas:** envio de lembretes automáticos aos alunos autenticados sobre situação acadêmica e atualizações importantes de informações institucionais.
 - **Suporte Multicanal:** canais de suporte ao usuário via aplicativo e WhatsApp para auxiliar na utilização da plataforma, retirada de dúvidas e captação de feedbacks.
@@ -162,13 +163,14 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 ### 4.5 Stakeholders (Envolvidos)
 
 - **Alunos da FACSENAC-DF:** público principal da plataforma, especialmente os matriculados no curso de Análise e Desenvolvimento de Sistemas. Utilizarão o aplicativo para consultar informações institucionais, calcular médias e acompanhar a própria frequência.
+- **Candidatos e Futuros Alunos:** pessoas interessadas em ingressar FACSENAC-DF que podem acessar os artigos públicos da Base de Conhecimento sem necessidade de autenticação. O acesso a informações institucionais como: regras, estrutura e funcionamento da faculdade. Essas informações podem ser utilizadas na tomada de decisão sobre a matrícula.
 - **Professores e Corpo Docente:** usuários secundários que podem consultar artigos da Base de Conhecimento e acompanhar informações institucionais relevantes para o exercício de suas ativadades.
 - **Gestrores e Administradores Institucionais:** responsáveis pela criação, revisão e publicação de conteúdo na Base do Conhecimento, garantindo que as informações estejam sempre atualizadas e alinhadas às políticas da faculdade.
 - **Secretaria Acadêmica e Setor Financeiro:** beneficiários indiretos do projeto, uma vez que a plataforma visa reduzir o volume de dúvidas e solucitações direcionadas a esses setores.
 - **Parceiros Tecnológicos:**
   - **Provedor de Hospedagem (Vercel/Render):** responsável pela infraestrutura e disponibilidade da plataforma.
-  - **Serviço de E-mail Transacional (SenGrid/Brevo/ReSend):** viabiliza o fluxo de autenticação e o envio de notificações ao usuários.
-  - **Google Play Store:** canal de distribuição do aplicativo mível Android.
+  - **Serviço de E-mail Transacional (SendGrid/Brevo/ReSend):** viabiliza o fluxo de autenticação e o envio de notificações ao usuários.
+  - **Google Play Store:** canal de distribuição do aplicativo móvel Android.
 
 ### 4.6 Premissas e Restrições
 
@@ -176,11 +178,11 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 - A FACSENAC-DF fornecerá as informações oficiais necessárias para alimentar a Base de Conhecimento e designará um responsável pela manutenção do conteúdo
 - Os alunos possuem acesso a smartphones Android e conectividade à Internet para utilizar o aplicativo.
 - A instituição concederá aval formal para divulgação e adoção da plataforma como canal oficial de informações.
-- A infraestrutura de hospedagem em nuvem escolhida escolhida garantirá disponibilidade e estabilidade suficientes para o uso acadêmico.
+- A infraestrutura de hospedagem em nuvem escolhida garantirá disponibilidade e estabilidade suficientes para o uso acadêmico.
 
 **Restrições:**
 - O escopo inicial está limitado ao curso de Análise e Desenvolvimento de Sistemas da FACSENAC-DF, sem expansão para outros cursos ou unidades nesta versão
-- Não há integração automática com o sistema acadêmico oficial da faculdade. Dados de notas e ferqu~encia são inseridos manualmente pelo aluno.
+- Não há integração automática com o sistema acadêmico oficial da faculdade. Dados de notas e frequência são inseridos manualmente pelo aluno.
 - O prazo de entrega é fixo em XX/XX/XXXX, condicionado ao calendário do semestre letivo vigente.
 - O orçamento estimado de R$32.306,68 não prevê contratações adicionais ou expansão de escopo durante o desenvolvimento.
 - A plataforma está disponível apenas para dispositivos Android na versão 1.0, sem suporte a iOS.
@@ -201,7 +203,7 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 - Riscos Operacionais e de Gestão
   - Curva de aprendizado dos usuários para adoção do aplicativo em substituição aos canais já utilizados.
   - Prazo fixo de entrega (XX/XX/XXXX) condicionado ao calendário letivo, sem margem para atrasos significativos no desenvolvimento.
-  - Escopo limitado a um único desenvolvedor, aumentando o risco de gargalos e atrasos.
+  - Escopo limitado a quatro desenvolvedores, aumentando o risco de gargalos e atrasos.
 
 ### 4.8 Escopo (Requisitos)
 
