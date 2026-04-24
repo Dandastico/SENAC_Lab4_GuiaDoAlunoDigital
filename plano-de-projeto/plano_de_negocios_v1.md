@@ -159,3 +159,28 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 - **Notificações Personalizadas:** envio de lembretes automáticos aos alunos autenticados sobre situação acadêmica e atualizações importantes de informações institucionais.
 - **Suporte Multicanal:** canais de suporte ao usuário via aplicativo e WhatsApp para auxiliar na utilização da plataforma, retirada de dúvidas e captação de feedbacks.
 
+### 4.5 Stakeholders (Envolvidos)
+
+- **Alunos da FACSENAC-DF:** público principal da plataforma, especialmente os matriculados no curso de Análise e Desenvolvimento de Sistemas. Utilizarão o aplicativo para consultar informações institucionais, calcular médias e acompanhar a própria frequência.
+- **Professores e Corpo Docente:** usuários secundários que podem consultar artigos da Base de Conhecimento e acompanhar informações institucionais relevantes para o exercício de suas ativadades.
+- **Gestrores e Administradores Institucionais:** responsáveis pela criação, revisão e publicação de conteúdo na Base do Conhecimento, garantindo que as informações estejam sempre atualizadas e alinhadas às políticas da faculdade.
+- **Secretaria Acadêmica e Setor Financeiro:** beneficiários indiretos do projeto, uma vez que a plataforma visa reduzir o volume de dúvidas e solucitações direcionadas a esses setores.
+- **Parceiros Tecnológicos:**
+  - **Provedor de Hospedagem (Vercel/Render):** responsável pela infraestrutura e disponibilidade da plataforma.
+  - **Serviço de E-mail Transacional (SenGrid/Brevo/ReSend):** viabiliza o fluxo de autenticação e o envio de notificações ao usuários.
+  - **Google Play Store:** canal de distribuição do aplicativo mível Android.
+
+### 4.6 Premissas e Restrições
+
+**Premissas:**
+- A FACSENAC-DF fornecerá as informações oficiais necessárias para alimentar a Base de Conhecimento e designará um responsável pela manutenção do conteúdo
+- Os alunos possuem acesso a smartphones Android e conectividade à Internet para utilizar o aplicativo.
+- A instituição concederá aval formal para divulgação e adoção da plataforma como canal oficial de informações.
+- A infraestrutura de hospedagem em nuvem escolhida escolhida garantirá disponibilidade e estabilidade suficientes para o uso acadêmico.
+
+**Restrições:**
+- O escopo inicial está limitado ao curso de Análise e Desenvolvimento de Sistemas da FACSENAC-DF, sem expansão para outros cursos ou unidades nesta versão
+- Não há integração automática com o sistema acadêmico oficial da faculdade. Dados de notas e ferqu~encia são inseridos manualmente pelo aluno.
+- O prazo de entrega é fixo em XX/XX/XXXX, condicionado ao calendário do semestre letivo vigente.
+- O orçamento estimado de R$32.306,68 não prevê contratações adicionais ou expansão de escopo durante o desenvolvimento.
+- A plataforma está disponível apenas para dispositivos Android na versão 1.0, sem suporte a iOS.
