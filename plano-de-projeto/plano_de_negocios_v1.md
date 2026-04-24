@@ -202,3 +202,16 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
   - Curva de aprendizado dos usuários para adoção do aplicativo em substituição aos canais já utilizados.
   - Prazo fixo de entrega (XX/XX/XXXX) condicionado ao calendário letivo, sem margem para atrasos significativos no desenvolvimento.
   - Escopo limitado a um único desenvolvedor, aumentando o risco de gargalos e atrasos.
+
+### 4.8 Escopo (Requisitos)
+
+- **Base de Conhecimento Institucional:** objetivo central da plataforma, que consistem em centralizar artigos sobre regras, normas e informações da FACSENAC-DF em um ambiente digital acessível. O sistema deve ser capaz de registrar, armazenar e exibir conteúdo de forma organizada e pesquisável, eliminando a dispersão de informações entre canais informais.
+- **Acessibilidade:** desenvolvimento de interface para aplicativo móvel Android e acesso via navegador web, sem necessidade de autenticação para leitura de artigos públicos.
+- **Funcionalidades para Alunos:**
+  - Calculadora de Média para acompanhamento do desempenho acadêmico.
+  - Acompanhamento de Presença para monitoramento da própria frequência nas disciplinas
+  - Recebimento de notificações personalizadas sobre situação acadêmica e atualizações institucionais
+- **Funcionalidades para Gestrores e Administradores Institucionais:**
+  - Criação, edição e publicação de artigos na Base de Conhecimento.
+  - Controle de visibilidade e organização de conteúdo publicado.
+  - Atualização ágil de normas, regulamentos e comunicados da faculdade
