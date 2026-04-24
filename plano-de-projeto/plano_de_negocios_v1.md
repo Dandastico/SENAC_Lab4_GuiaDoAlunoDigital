@@ -115,7 +115,7 @@ A estrutura do Guia Digital Estudantil envolve os seguintes gastos:
 |Hospedagem em nuvem (Vercel/Render) | Plano básico para aplicação web | ~R$ 100 |
 | Serviço de e-mail transacional | Plano para até 20 mil e-mails mensais | ~R$ 50 |
 | Domínio | Registro anual dividido mensalmente | ~R$ 3,34 |
-| **Subtotal Infraestrutura** | | **~R$ 306,683** |
+| **Subtotal Infraestrutura (2 meses)** | | **~R$ 306,683** |
 
 <br>
 
