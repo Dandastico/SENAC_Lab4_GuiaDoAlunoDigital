@@ -226,5 +226,12 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 - Suporte técnico para dispositivos, sistemas operacionais ou problemas de conectividade do usuário
 - Moderação de conteúdo gerado por alunos, uma vez que a publicação de artigos é restrita a gestores institucionais
 
-### 4.10 Entregas / Datas/ Investimento e Custos
+### 4.10 Entregas / Datas / Investimento e Custos
 
+| **Entrega** | **Data Prevista** | **Custo Estimado** |
+|---|---|---|
+| Protótipo de Telas no Figma | 30/04/2026 | R$ 5.000,00 |
+| Banco de Dados | 31/05/2026 | R$ 7.000,00 |
+| CMS Web | 15/06/2026 | R$ 10.000,00 |
+| Aplicativo Mobile (java/Android) | 26/06/2026 | R$ 10.306,68 |
+| **Total** |  | **R$ 32.306,68** |
