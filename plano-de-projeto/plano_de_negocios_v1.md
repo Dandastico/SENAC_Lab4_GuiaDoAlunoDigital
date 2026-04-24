@@ -215,3 +215,16 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
   - Criação, edição e publicação de artigos na Base de Conhecimento.
   - Controle de visibilidade e organização de conteúdo publicado.
   - Atualização ágil de normas, regulamentos e comunicados da faculdade
+
+### 4.9 Não Escopo
+
+- Integração automática com sistema acadêmico oficial da FACSENAC-DF para importação de notas e frequência
+- Suporte a dispositivos iOS na versão 1.0
+- Expansão para outros cursos ou unidades SENAC nesta versão
+- Funcionalidades de trabalho colaborativo entre alunos, como entrega de atividades ou comunicação entre pares
+- Responsabilidade pela precisão de dados de notas e presença inseridos manualmente pelo próprio aluno
+- Suporte técnico para dispositivos, sistemas operacionais ou problemas de conectividade do usuário
+- Moderação de conteúdo gerado por alunos, uma vez que a publicação de artigos é restrita a gestores institucionais
+
+### 4.10 Entregas / Datas/ Investimento e Custos
+
