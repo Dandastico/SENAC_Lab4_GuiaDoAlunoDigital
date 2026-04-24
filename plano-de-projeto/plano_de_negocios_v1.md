@@ -184,3 +184,21 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 - O prazo de entrega é fixo em XX/XX/XXXX, condicionado ao calendário do semestre letivo vigente.
 - O orçamento estimado de R$32.306,68 não prevê contratações adicionais ou expansão de escopo durante o desenvolvimento.
 - A plataforma está disponível apenas para dispositivos Android na versão 1.0, sem suporte a iOS.
+
+### 4.7 Riscos
+
+- Riscos de Mercado e Adoção:
+  - Baixa adesão dos alunos à plataforma, com manutenção do uso de canais informais como grupos de WhatsApp.
+  - Falta de engajamento institucional da FACSENAC-DF, sem designação de um responsável pela atualização do conteúdo.
+  - Resistência da instituição em adotar oficialmente uma ferramenta de desenvolvimetno por alunos.
+- Riscos Tecnológicos e de Infraestrutura
+  - Problemas de disponibilidade ou instabilidade do provedor de hospedagem escolhido (Vercel/Render).
+  - Falhas no serviço de e-mail transacional (SendGrid/Brevo/ReSend), impactando autenticação e notificações.
+  - Dependência de conectividade à Internet por parte dos alunos para acesso ao aplicativo.
+- Riscos de Conteúdo
+  - Desatualização das informações da Base de Conhecimento por ausência de processo claro de manutenção.
+  - Publicação de informações incorretas ou desalinhadas às políticas vigentes da faculdade, prejudicando a credibilidade da plataforma.
+- Riscos Operacionais e de Gestão
+  - Curva de aprendizado dos usuários para adoção do aplicativo em substituição aos canais já utilizados.
+  - Prazo fixo de entrega (XX/XX/XXXX) condicionado ao calendário letivo, sem margem para atrasos significativos no desenvolvimento.
+  - Escopo limitado a um único desenvolvedor, aumentando o risco de gargalos e atrasos.
