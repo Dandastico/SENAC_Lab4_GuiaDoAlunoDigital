@@ -36,8 +36,8 @@ CREATE TABLE cms.setores (
 -- Artigos da base de conhecimento
 CREATE TABLE cms.artigos (
     id SERIAL PRIMARY KEY,
-    secao_id INT NOT NULL REFERENCES cms.setores(id) ON DELETE SET NULL,
-    autor_id UUID NOT NULL REFERENCES auth.users(id),
+    secao_id INT NOT NULL REFERENCES cms.setores(id) ON DELETE RESTRICT,
+    autor_id UUID REFERENCES auth.users(id),
     titulo TEXT NOT NULL,
     slug TEXT NOT NULL UNIQUE,
     conteudo TEXT NOT NULL, -- html ou markdown
@@ -46,7 +46,10 @@ CREATE TABLE cms.artigos (
     publicado_em TIMESTAMPTZ, -- NULL significa não publicado ainda
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    search_vector TSVECTOR
+    search_vector TSVECTOR,
+    
+    CONSTRAINT artigo_publicado_exige_secao
+        CHECK (status NOT IN ('publicado', 'agendado') OR secao_id IS NOT NULL) 
 );
 
 CREATE TABLE cms.revisoes_de_artigos (
@@ -55,5 +58,5 @@ CREATE TABLE cms.revisoes_de_artigos (
     editor_id UUID NOT NULL REFERENCES auth.users(id),
     titulo TEXT NOT NULL,
     conteudo TEXT NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
