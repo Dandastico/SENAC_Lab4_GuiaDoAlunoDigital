@@ -52,7 +52,7 @@ As relações com os usuários do Guia Estudantil Digital serão estabelecidos e
 ### 3.3 Canais
 
 Os seguintes canais serão utilizados:
-- Aplicativo Móvel: Disponível para download em lojas de aplicativo Android.
+- Aplicativo Móvel: Disponível para download em loja de aplicativo Android.
 - Portal Web: Acesso ao portal por navegadores modernos.
 - Parcerias Institucionais: Divulgação nos ambientes físicos e digitais da faculdade, informando os interessados os serviços disponíveis.
 - Mídia Digital e Social: Campanhas de marketing digital e presença em redes sociais para alcançar o público-alvo e disseminar informações relevantes.
@@ -112,10 +112,10 @@ A estrutura do Guia Digital Estudantil envolve os seguintes gastos:
 
 | **Serviço** | **Descrição** | **Custo estimado/mês** |
 |---|---|---|
-|Hospedagem em nuvem (Vercel/Render) | Plano básico para aplicação web | ~R$ 100 |
+|Hospedagem em nuvem (AWS/Vercel/Render) | Plano básico para aplicação web | ~R$ 100 |
 | Serviço de e-mail transacional | Plano para até 20 mil e-mails mensais | ~R$ 50 |
 | Domínio | Registro anual dividido mensalmente | ~R$ 3,34 |
-| **Subtotal Infraestrutura (2 meses)** | | **~R$ 306,683** |
+| **Subtotal Infraestrutura (2 meses)** | | **~R$ 306,68** |
 
 <br>
 
@@ -125,7 +125,7 @@ A estrutura do Guia Digital Estudantil envolve os seguintes gastos:
 |---|---|
 | Mão de obra (dois meses) | R$ 32.000 |
 | Infraestrutura (por mês) | R$ 153,34 |
-| **Total do Projeto** | **~R$ 32.306,68 no período de 2 meses** |
+| **Total do Projeto (2 meses)** | **~R$ 32.306,68 no período de 2 meses** |
 
 ### 3.9 Fontes de Renda/Receita
 
@@ -135,11 +135,11 @@ O Guia Estudantil Digital não possui fonte de receita direta, sendo caracteriza
 
 ### 4.1 Objetivo SMART
 
-Desenvolver e lançar a versão 1.0 do Guia Estudantil Difital da FACSENAC-DF (um aplicativo móvel Android com Base de Conhecimento Institucional, Calculadora de Média e Acompanhamento de Presença) até 26 de junho de 2026, atendendo inicialmente os alunos do curso de Análise e Desenvolvimento de Sistemas, com o objetivo de reduzir em pelo menos 30% o volume de dúvidas básicas direcionadas à Secretaria Acadêmica e ao setor Financeiro no primeiro semestre após o lançamento.
+Desenvolver e lançar a versão 1.0 do Guia Estudantil Digital da FACSENAC-DF (um aplicativo móvel Android com Base de Conhecimento Institucional, Calculadora de Média e Acompanhamento de Presença) até 26 de junho de 2026, atendendo inicialmente os alunos do curso de Análise e Desenvolvimento de Sistemas, com o objetivo de reduzir em pelo menos 30% o volume de dúvidas básicas direcionadas à Secretaria Acadêmica e ao setor Financeiro no primeiro semestre após o lançamento.
 
 ### 4.2 Justificativa
 
-A informação institucional da FACSENAC-DF encontra-se dispersa entre grupos de WhatsApp, PDFs desatualizados e e-mails, gerando dúvidas recorrentes que sobrecarregam os setories administrativos e os professores em sala de aula, além de dificultar a auto-gestão da vida acadêmica pelos alunos. O Guia Estudantil Digital surge como resposta a esse cenário, centralizando as informações institucionais em um aplicativo Android de fácil acesso, com conteúdo atualizável em tempo real e ferramentes práticas como Calculadora de Média e Acompanhamento de Presença, seguindo modelos já consolidados por plataformas com centrais de ajuda de referência como Meta, Brevo e Mozilla.
+A informação institucional da FACSENAC-DF encontra-se dispersa entre grupos de WhatsApp, PDFs desatualizados e e-mails, gerando dúvidas recorrentes que sobrecarregam os setores administrativos e os professores em sala de aula, além de dificultar a auto-gestão da vida acadêmica pelos alunos. O Guia Estudantil Digital surge como resposta a esse cenário, centralizando as informações institucionais em um aplicativo Android de fácil acesso, com conteúdo atualizável em tempo real e ferramentas práticas como Calculadora de Média e Acompanhamento de Presença, seguindo modelos já consolidados por plataformas com centrais de ajuda de referência como Meta, Brevo e Mozilla.
 
 ### 4.3 Benefícios
 
@@ -148,7 +148,7 @@ A informação institucional da FACSENAC-DF encontra-se dispersa entre grupos de
 
 **Quais necessidades serão atendidas?**
 - **Ganhos para a Instituição:** redução do volume de dúvidas direcionadas à Secretaria Acadêmica e ao setor Financeiro, diminuição da circulação de informações desatualizadas ou incorretas entre os alunos, e maior agilidade na atualização e disseminação de comunicados e normas institucionais.
-- **Ganhos para o Aluno:** acesso rápido e centralizado a informações acadêmicas sem depender de atendimento ou remoto, autonomia para calcular médias e acompanhar a própria frequência, e facilidade para consultar regras e regulamentos a qualquer hora e lugar diretamente pelo celular.
+- **Ganhos para o Aluno:** acesso rápido e centralizado a informações acadêmicas sem depender de atendimento presencial ou remoto, autonomia para calcular médias e acompanhar a própria frequência, e facilidade para consultar regras e regulamentos a qualquer hora e lugar diretamente pelo celular.
 
 ### 4.4 Características do Produto / Serviço
 
@@ -164,11 +164,11 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 
 - **Alunos da FACSENAC-DF:** público principal da plataforma, especialmente os matriculados no curso de Análise e Desenvolvimento de Sistemas. Utilizarão o aplicativo para consultar informações institucionais, calcular médias e acompanhar a própria frequência.
 - **Candidatos e Futuros Alunos:** pessoas interessadas em ingressar FACSENAC-DF que podem acessar os artigos públicos da Base de Conhecimento sem necessidade de autenticação. O acesso a informações institucionais como: regras, estrutura e funcionamento da faculdade. Essas informações podem ser utilizadas na tomada de decisão sobre a matrícula.
-- **Professores e Corpo Docente:** usuários secundários que podem consultar artigos da Base de Conhecimento e acompanhar informações institucionais relevantes para o exercício de suas ativadades.
-- **Gestrores e Administradores Institucionais:** responsáveis pela criação, revisão e publicação de conteúdo na Base do Conhecimento, garantindo que as informações estejam sempre atualizadas e alinhadas às políticas da faculdade.
+- **Professores e Corpo Docente:** usuários secundários que podem consultar artigos da Base de Conhecimento e acompanhar informações institucionais relevantes para o exercício de suas atividades.
+- **Gestores e Administradores Institucionais:** responsáveis pela criação, revisão e publicação de conteúdo na Base do Conhecimento, garantindo que as informações estejam sempre atualizadas e alinhadas às políticas da faculdade.
 - **Secretaria Acadêmica e Setor Financeiro:** beneficiários indiretos do projeto, uma vez que a plataforma visa reduzir o volume de dúvidas e solucitações direcionadas a esses setores.
 - **Parceiros Tecnológicos:**
-  - **Provedor de Hospedagem (Vercel/Render):** responsável pela infraestrutura e disponibilidade da plataforma.
+  - **Provedor de Hospedagem (AWS/Vercel/Render):** responsável pela infraestrutura e disponibilidade da plataforma.
   - **Serviço de E-mail Transacional (SendGrid/Brevo/ReSend):** viabiliza o fluxo de autenticação e o envio de notificações ao usuários.
   - **Google Play Store:** canal de distribuição do aplicativo móvel Android.
 
@@ -192,9 +192,9 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 - Riscos de Mercado e Adoção:
   - Baixa adesão dos alunos à plataforma, com manutenção do uso de canais informais como grupos de WhatsApp.
   - Falta de engajamento institucional da FACSENAC-DF, sem designação de um responsável pela atualização do conteúdo.
-  - Resistência da instituição em adotar oficialmente uma ferramenta de desenvolvimetno por alunos.
+  - Resistência da instituição em adotar oficialmente uma ferramenta de desenvolvimento por alunos.
 - Riscos Tecnológicos e de Infraestrutura
-  - Problemas de disponibilidade ou instabilidade do provedor de hospedagem escolhido (Vercel/Render).
+  - Problemas de disponibilidade ou instabilidade do provedor de hospedagem escolhido (AWS/Vercel/Render).
   - Falhas no serviço de e-mail transacional (SendGrid/Brevo/ReSend), impactando autenticação e notificações.
   - Dependência de conectividade à Internet por parte dos alunos para acesso ao aplicativo.
 - Riscos de Conteúdo
