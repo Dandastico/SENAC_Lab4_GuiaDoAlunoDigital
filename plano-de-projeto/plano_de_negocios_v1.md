@@ -135,7 +135,7 @@ O Guia Estudantil Digital não possui fonte de receita direta, sendo caracteriza
 
 ### 4.1 Objetivo SMART
 
-Desenvolver e lançar a versão 1.0 do Guia Estudantil Digital da FACSENAC-DF (um aplicativo móvel Android com Base de Conhecimento Institucional, Calculadora de Média e Acompanhamento de Presença) até 26 de junho de 2026, atendendo inicialmente os alunos do curso de Análise e Desenvolvimento de Sistemas, com o objetivo de reduzir em pelo menos 30% o volume de dúvidas básicas direcionadas à Secretaria Acadêmica e ao setor Financeiro no primeiro semestre após o lançamento.
+Desenvolver e lançar a versão 1.0 do Guia Estudantil Digital da FACSENAC-DF (um aplicativo móvel Android com Base de Conhecimento Institucional, Calculadora de Média e Acompanhamento de Presença) até 19 de junho de 2026, atendendo inicialmente os alunos do curso de Análise e Desenvolvimento de Sistemas, com o objetivo de reduzir em pelo menos 30% o volume de dúvidas básicas direcionadas à Secretaria Acadêmica e ao setor Financeiro no primeiro semestre após o lançamento.
 
 ### 4.2 Justificativa
 
@@ -183,7 +183,7 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 **Restrições:**
 - O escopo inicial está limitado ao curso de Análise e Desenvolvimento de Sistemas da FACSENAC-DF, sem expansão para outros cursos ou unidades nesta versão
 - Não há integração automática com o sistema acadêmico oficial da faculdade. Dados de notas e frequência são inseridos manualmente pelo aluno.
-- O prazo de entrega é fixo em XX/XX/XXXX, condicionado ao calendário do semestre letivo vigente.
+- O prazo de entrega é fixo em 19/06/2026, condicionado ao calendário do semestre letivo vigente.
 - O orçamento estimado de R$32.306,68 não prevê contratações adicionais ou expansão de escopo durante o desenvolvimento.
 - A plataforma está disponível apenas para dispositivos Android na versão 1.0, sem suporte a iOS.
 
@@ -202,7 +202,7 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
   - Publicação de informações incorretas ou desalinhadas às políticas vigentes da faculdade, prejudicando a credibilidade da plataforma.
 - Riscos Operacionais e de Gestão
   - Curva de aprendizado dos usuários para adoção do aplicativo em substituição aos canais já utilizados.
-  - Prazo fixo de entrega (XX/XX/XXXX) condicionado ao calendário letivo, sem margem para atrasos significativos no desenvolvimento.
+  - Prazo fixo de entrega (19/06/2026) condicionado ao calendário letivo, sem margem para atrasos significativos no desenvolvimento.
   - Escopo limitado a quatro desenvolvedores, aumentando o risco de gargalos e atrasos.
 
 ### 4.8 Escopo (Requisitos)
@@ -235,5 +235,5 @@ O Guia Estudantil Digital é uma plataforma de centralização de informações 
 | Protótipo de Telas no Figma | 30/04/2026 | R$ 5.000,00 |
 | Banco de Dados | 31/05/2026 | R$ 7.000,00 |
 | CMS Web | 15/06/2026 | R$ 10.000,00 |
-| Aplicativo Mobile (java/Android) | 26/06/2026 | R$ 10.306,68 |
+| Aplicativo Mobile (java/Android) | 19/06/2026 | R$ 10.306,68 |
 | **Total** |  | **R$ 32.306,68** |
