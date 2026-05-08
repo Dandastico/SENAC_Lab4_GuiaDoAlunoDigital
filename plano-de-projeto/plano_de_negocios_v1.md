@@ -1,5 +1,11 @@
 # PLANO DE NEGÓCIOS: GUIA ESTUDANTIL DIGITAL FACSENAC-DF
 
+**Integrantes**
+- Daniel Ferreira Alves - 4º Semestre, ADS B Noturno
+- Filipe Peres - 4º Semestre, ADS B Noturno
+- Gabriel Republicano - 4º Semestre, ADS B Noturno
+- Gabriel Oliveira - 4º Semestre, ADS B Noturno
+
 ## 1. CARACTERIZAÇÃO DO EMPREENDIMENTO
 
 ### 1.1 Caracterização do Empreendimento
