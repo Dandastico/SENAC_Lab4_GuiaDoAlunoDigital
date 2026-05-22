@@ -31,6 +31,6 @@ httpx==0.27.2               # cliente HTTP async (envio de e-mail, etc)
 # ======================================
 # UTILITÁRIOS
 # ======================================
-python-multipart==0.0.12    # upload de arquivos e form data
+python-multipart==0.0.18    # upload de arquivos e form data
 python-slugify==8.0.4       # gera slugs
 python-dateutil==2.9.0      # manipulação avançada de datas
