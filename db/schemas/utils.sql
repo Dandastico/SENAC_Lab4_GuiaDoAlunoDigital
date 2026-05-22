@@ -26,3 +26,15 @@ BEGIN
 END;
 $$;
 
+-- Cria automaticamente um perfil quando usuário é registrado
+CREATE OR REPLACE FUNCTION public.criar_perfil_novo_usuario()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+    INSERT INTO public.perfis (id, nome_inteiro)
+    VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name');
+    RETURN NEW;
+END;
+$$;

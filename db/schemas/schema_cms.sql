@@ -2,7 +2,7 @@
 -- BANCO DE DADOS DA BASE DE CONHECIMENTO
 -- ===========================================
 
-CREATE SCHEMA cms;
+CREATE SCHEMA IF NOT EXISTS cms;
 
 -- ENUM para os possíveis estados de um artigo
 CREATE TYPE cms.artigo_status AS ENUM (
