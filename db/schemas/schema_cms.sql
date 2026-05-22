@@ -64,6 +64,14 @@ CREATE TABLE cms.revisoes_de_artigos (
     editado_em TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Tabela que ajuda a analisar popularidade de artigos
+CREATE TABLE cms.visualizacoes (
+    id BIGSERIAL PRIMARY KEY,
+    artigo_id INT NOT NULL REFERENCES cms.artigos(id) ON DELETE CASCADE,
+    usuario_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+    visualizado_em timestamptz NOT NULL DEFAULT now()
+);
+
 -- Busca de artigos é a query mais frequente
 CREATE INDEX idx_artigos_status ON cms.artigos(status);
 CREATE INDEX idx_artigos_secao_id ON cms.artigos(secao_id);
@@ -75,6 +83,10 @@ CREATE INDEX idx_artigos_agendados ON cms.artigos(agendado_para)
 
 -- Index faz busca full-text ser mais performática
 CREATE INDEX idx_artigos_search_vector ON cms.artigos USING GIN(search_vector);
+
+-- Indexes das visualizacoes
+CREATE INDEX idx_visualizacoes_artigo_id ON cms.visualizacoes(artigo_id);
+CREATE INDEX idx_visualizacoes_em ON cms.visualizacoes(visualizado_em);
 
 -- ===========================================
 -- RLS BÁSICO
