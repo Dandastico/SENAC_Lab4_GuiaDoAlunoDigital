@@ -4,7 +4,7 @@
 
 CREATE SCHEMA cms;
 
--- ENUM para os possíveris estados de um artigo
+-- ENUM para os possíveis estados de um artigo
 CREATE TYPE cms.artigo_status AS ENUM (
     'rascunho',     -- visível para os admin
     'publicado',    -- visível para todos
@@ -49,7 +49,9 @@ CREATE TABLE cms.artigos (
     search_vector TSVECTOR,
     
     CONSTRAINT artigo_publicado_exige_secao
-        CHECK (status NOT IN ('publicado', 'agendado') OR secao_id IS NOT NULL) 
+        CHECK (status NOT IN ('publicado', 'agendado') OR secao_id IS NOT NULL) ,
+    CONSTRAINT agendado_exige_data
+        CHECK (status != 'agendado' OR agendado_para IS NOT NULL)
 );
 
 -- Histórico de edições (útil para auditoria de conteúdo)
@@ -69,7 +71,7 @@ CREATE INDEX idx_artigos_slug ON cms.artigos(slug);
 
 -- Publicação agendada
 CREATE INDEX idx_artigos_agendados ON cms.artigos(agendado_para)
-    WHERE status = 'rascunho' AND agendado_para IS NOT NULL;
+    WHERE status = 'agendado' AND agendado_para IS NOT NULL;
 
 -- Index faz busca full-text ser mais performática
 CREATE INDEX idx_artigos_search_vector ON cms.artigos USING GIN(search_vector);
