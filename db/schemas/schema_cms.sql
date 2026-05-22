@@ -23,7 +23,7 @@ CREATE TABLE cms.categorias (
 );
 
 -- Seções são segmentações que habitam dentro das categorias
-CREATE TABLE cms.setores (
+CREATE TABLE cms.secoes (
     id SERIAL PRIMARY KEY,
     categoria_id INT NOT NULL REFERENCES cms.categorias(id) ON DELETE CASCADE,
     nome TEXT NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE cms.setores (
 -- Artigos da base de conhecimento
 CREATE TABLE cms.artigos (
     id SERIAL PRIMARY KEY,
-    secao_id INT REFERENCES cms.setores(id) ON DELETE RESTRICT,
+    secao_id INT REFERENCES cms.secoes(id) ON DELETE RESTRICT,
     autor_id UUID REFERENCES auth.users(id),
     titulo TEXT NOT NULL,
     slug TEXT NOT NULL UNIQUE,
