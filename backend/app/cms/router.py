@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_sessao
-from app.security import get_current_user, require_admin
+from app.security import require_admin
 from app.cms.repository import ArtigoRepository
 from app.cms.service import ArtigoService
 from app.cms.schemas import ArtigoCreate, ArtigoUpdate, ArtigoRead, ArtigoList
@@ -14,7 +14,7 @@ def _service(session: AsyncSession = Depends(get_sessao)) -> ArtigoService:
 @router.get("", response_model=ArtigoList)
 async def listar(
     page: int = Query(1, ge=1),
-    page_size: int = Query(20, ge=1, le=00),
+    page_size: int = Query(20, ge=1, le=100),
     svc: ArtigoService = Depends(_service)
 ):
     skip = (page - 1) * page_size
@@ -49,7 +49,7 @@ async def atualizar(
 @router.delete("/{artigo_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def excluir(
     artigo_id: int,
-    admind = Depends(require_admin),
+    admin = Depends(require_admin),
     svc: ArtigoService = Depends(_service),
 ):
     artigo = await svc.repo.get(artigo_id)

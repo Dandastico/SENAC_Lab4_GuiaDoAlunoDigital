@@ -1,9 +1,9 @@
 from sqlalchemy import select, func
-from sqlalchemy.ext.ayncio import AsynSession
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.cms.models import Artigo, ArtigoStatus
 
 class ArtigoRepository:
-    def __init__(self, session: AsynSession):
+    def __init__(self, session: AsyncSession):
         self.session = session
     
     async def get(self, artigo_id: int) -> Artigo | None:
@@ -17,9 +17,9 @@ class ArtigoRepository:
         stmt = (
             select(Artigo)
             .where(Artigo.status == ArtigoStatus.publicado)
-            .order_byt(Artigo.publicado_em.desc())
+            .order_by(Artigo.publicado_em.desc())
             .offset(skip)
-            .lmit(limit)
+            .limit(limit)
         )
         result = await self.session.execute(stmt)
         return result.scalars().all()
@@ -28,7 +28,7 @@ class ArtigoRepository:
         stmt = select(func.count()).select_from(Artigo).where(
             Artigo.status == ArtigoStatus.publicado
         )
-        return (await self.session.execute(stmt).scalar_one())
+        return (await self.session.execute(stmt)).scalar_one()
     
     async def add(self, artigo: Artigo) -> Artigo:
         self.session.add(artigo)
