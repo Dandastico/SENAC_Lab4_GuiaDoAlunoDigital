@@ -2,7 +2,7 @@
 -- FUNÇÕES E OUTRAS COISAS
 -- -----------------------------------------------------------------------
 
--- Função genérica que inviabiliza coluna atualizado_em (schema:public)
+-- Função genérica que viabiliza coluna atualizado_em (schema:public)
 CREATE OR REPLACE FUNCTION set_atualizado_em()
 RETURNS TRIGGER
 LANGUAGE plpgsql
