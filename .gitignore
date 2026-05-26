@@ -11,3 +11,8 @@ backend/sugestao_api.md
 __pycache__/
 *.py[cod]
 *$py.class
+
+# .env do ./backend
+backend/.env
+backend/.env.*
+!.env.example
