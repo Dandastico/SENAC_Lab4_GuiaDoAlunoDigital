@@ -4,6 +4,8 @@ from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 from app.cms.models import ArtigoStatus
 
+# ===== Artigos =====
+
 class ArtigoBase(BaseModel):
     titulo: str = Field(min_length=3, max_length=255)
     conteudo: str = Field(min_length=1)
@@ -38,3 +40,52 @@ class ArtigoList(BaseModel):
     page: int
     page_size: int
 
+# ===== Categorias =====
+
+class CategoriaBase(BaseModel):
+    nome: str = Field(min_length=2, max_length=100)
+    descricao: str | None = None
+    posicao: int = Field(default=0, ge=0)
+
+class CategoriaCreate(CategoriaBase):
+    pass # slug gerado pelo service.py
+
+class CategoriaUpdate(BaseModel):
+    nome: str | None = Field(default=None, min_length=2, max_length=100)
+    descricao: str | None = None
+    posicao: int | None = Field(default=None, ge=0)
+
+class CategoriaRead(CategoriaBase):
+    id: int
+    slug: str
+    criado_em: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+# ===== Seção =====
+
+class SecaoBase(BaseModel):
+    nome: str = Field(min_length=2, max_length=100)
+    posicao: int = Field(default=0, ge=0)
+
+class SecaoCreate(SecaoBase):
+    categoria_id: int # obrigatório
+
+class SecaoUpdate(BaseModel):
+    nome: str | None = Field(default=None, min_length=2, max_length=100)
+    posicao: int | None = Field(default=None, ge=0)
+    categoria_id: int | None = None # pode mover seção entre categorias
+
+class SecaoRead(SecaoBase):
+    id: int
+    categoria_id: int
+    slug: str
+    criado_em: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+# ===== Variantes aninhadas =====
+
+class CategoriaComSecoes(CategoriaRead):
+    # carrega seções pré-carregadas de uma categoria
+    secoes: list[SecaoBase] = []

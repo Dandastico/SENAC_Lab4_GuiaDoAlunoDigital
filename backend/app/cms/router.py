@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_sessao
 from app.security import require_admin
-from app.cms.repository import ArtigoRepository
-from app.cms.service import ArtigoService
+from app.cms.repository import ArtigoRepository, CategoriaRepository, SecaoRepository
+from app.cms.service import ArtigoService, CategoriaService, SecaoService
 from app.cms.schemas import ArtigoCreate, ArtigoUpdate, ArtigoRead, ArtigoList
+
+# ===== Artigos =====
 
 router = APIRouter(prefix="/artigos", tags=["artigos"])
 
@@ -57,3 +59,16 @@ async def excluir(
         raise HTTPException(status.HTTP_404_NOT_FOUND)
     await svc.repo.delete(artigo)
     await svc.repo.session.commit()
+
+
+# ===== Categorias =====
+
+categorias_router = APIRouter(prefix="/categorias", tags=["categorias"])
+
+def _categoria_service(session: AsyncSession = Depends(get_sessao)) -> CategoriaService:
+    return CategoriaService(CategoriaRepository(session))
+
+@categorias_router.get("", response_model=list[CategoriaRead])
+async def lista_categorias(svc: CategoriaService = Depends(_categoria_service)):
+    return await svc.repo.listar(skip=0, limit=100)
+
