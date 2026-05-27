@@ -12,6 +12,6 @@ async def integrity_error_handler(request: Request, exc: IntegrityError):
     else:
         code = status.HTTP_409_CONFLICT
     return JSONResponse(
-        status_code=status.code,
-        content={"detail": str(orig), "info": str(exc.orig)}
+        status_code=code,
+        content={"detail": str(orig)}
     )
