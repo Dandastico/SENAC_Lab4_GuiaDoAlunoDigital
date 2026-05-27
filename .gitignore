@@ -2,8 +2,9 @@ CLAUDE.md
 
 db/schema_cms.txt
 
-
+# documentos gerados pelo Claude
 backend/sugestao_api.md
+# backend/sugestao_api_categorias_secoe.md
 
 .venv
 
