@@ -22,6 +22,6 @@ async def get_current_user(
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, str(e))
     
 async def require_admin(user: dict = Depends(get_current_user)) -> dict:
-    if user is None or user.get("user_metadata", {}).get("funcao") != "admin":
+    if user is None or user.get("app_metadata", {}).get("funcao") != "admin":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Apenas admins")
     return user

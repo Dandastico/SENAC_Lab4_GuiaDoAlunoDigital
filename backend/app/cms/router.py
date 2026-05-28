@@ -54,7 +54,10 @@ async def atualizar(
     artigo = await svc.repo.get(artigo_id)
     if not artigo:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
-    artigo = await svc.atualizar(artigo,dados)
+    try:
+        artigo = await svc.atualizar(artigo, dados)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(e))
     await svc.repo.session.commit()
     return artigo
 

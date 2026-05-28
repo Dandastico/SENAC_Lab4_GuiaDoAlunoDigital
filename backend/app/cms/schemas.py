@@ -28,15 +28,6 @@ class ArtigoUpdate(BaseModel):
     status: ArtigoStatus | None = None
     agendado_para: datetime | None = None
 
-    @model_validator(mode="after")
-    def agendado_exige_data(self):
-        status_mudou_para_agendado = self.status == ArtigoStatus.agendado
-        data_foi_explicitamente_removida = self.agendado_para is None
-        # só valida se status for explicitamente definido como agendado
-        if status_mudou_para_agendado and data_foi_explicitamente_removida:
-            raise ValueError("agendado_para é obrigatório quando status é 'agendado'")
-        return self
-
 class ArtigoRead(ArtigoBase):
     id: int
     slug: str
