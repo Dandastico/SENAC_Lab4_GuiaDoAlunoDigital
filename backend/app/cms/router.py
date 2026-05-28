@@ -130,4 +130,62 @@ async def excluit_categoria(
     if not categoria:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
     await svc.deletar(categoria)
-    await svc.repo.session.commit
+    await svc.repo.session.commit()
+
+# ===== Seções =====
+
+secoes_router = APIRouter(prefix="/secoes", tags=["secoes"])
+
+def _secao_service(session: AsyncSession = Depends(get_sessao)) -> SecaoService:
+    return SecaoService(SecaoRepository(session), CategoriaRepository(session))
+
+@secoes_router.get("", response_model=list[SecaoRead])
+async def listar_secoes(
+    categoria_id: int = Query(..., description="Filtrar por categoria"),
+    svc: SecaoService = Depends(_secao_service)
+):
+    return await svc.listar_da_categoria(categoria_id)
+
+@secoes_router.post("", response_model=SecaoRead, status_code=status.HTTP_201_CREATED)
+async def criar_secao(
+    dados: SecaoCreate,
+    admin = Depends(require_admin),
+    svc: SecaoService = Depends(_secao_service),
+):
+    try:
+        secao = await svc.criar(dados)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(e))
+    await svc.repo.session.commit()
+    return secao
+
+@secoes_router.patch("/{secao_id}", response_model=SecaoRead)
+async def atualizar_secao(
+    secao_id: int,
+    dados: SecaoUpdate,
+    admin = Depends(require_admin),
+    svc: SecaoService = Depends(_secao_service),
+):
+    secao = await svc.repo.get(secao_id)
+    if not secao:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    try:
+        secao = await svc.atualizar(secao, dados)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(e))
+    await svc.repo.session.commit()
+    return secao
+
+@secoes_router.delete("/{secao_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def excluir_secao(
+    secao_id: int,
+    admin = Depends(require_admin),
+    svc: SecaoService = Depends(_secao_service),
+):
+    secao = await svc.repo.get(secao_id)
+    if not secao:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    await svc.repo.delete(secao)
+    await svc.repo.session.commit()
+
+    

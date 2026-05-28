@@ -1,10 +1,16 @@
 from fastapi import FastAPI
-from app.cms.router import router as cms_router
+from app.cms.router import (
+    router as artigos_router,
+    categorias_router,
+    secoes_router
+)
 from sqlalchemy.exc import IntegrityError
 from app.errors import integrity_error_handler
 
 app = FastAPI(title="Guia Estudantil FACSENAC-DF – API")
-app.include_router(cms_router)
+app.include_router(categorias_router)
+app.include_router(secoes_router)
+app.include_router(artigos_router)
 
 app.add_exception_handler(IntegrityError, integrity_error_handler)
 
