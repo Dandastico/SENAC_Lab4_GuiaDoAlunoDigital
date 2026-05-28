@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from uuid import UUID
 from slugify import slugify
+from sqlalchemy import select, func
+from fastapi import HTTPException, status
 from app.cms.models import Artigo, ArtigoStatus, Categoria, Secao
 from app.cms.schemas import ArtigoCreate, ArtigoUpdate, CategoriaCreate, CategoriaUpdate, SecaoCreate, SecaoUpdate
 from app.cms.repository import ArtigoRepository, SecaoRepository, CategoriaRepository
@@ -29,15 +31,22 @@ class CategoriaService:
             )
         for k, v in update.items():
             setattr(categoria, k, v)
-        await self.repo.flush()
+        await self.repo.session.flush()
         await self.repo.refresh(categoria)
         return categoria
     
     async def deletar(self, categoria: Categoria) -> None:
-        qtd = await self.artigo_repo.contar_ṕor_categoria(categoria.id)
+        stmt = (
+            select(func.count())
+            .select_from(Artigo)
+            .join(Secao, Artigo.secao_id == Secao.id)
+            .where(Secao.categoria_id == categoria.id)
+        )
+        qtd = (await self.repo.session.execute(stmt)).scalar_one()
         if qtd > 0:
-            raise ValueError(
-                f"Categoria tem {qtd} de artigo(s) vinculado(s). "
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                f"Categoria tem {qtd} artigo(s) vinculado(s). "
                 "Mova ou apague os artigos antes de remover a categoria."
             )
         await self.repo.delete(categoria)
@@ -46,7 +55,7 @@ class CategoriaService:
         base = slugify(nome)
         slug, n = base, 1
         while True:
-            existence = await self.repo.get_byr_slug(slug)
+            existence = await self.repo.get_by_slug(slug)
             if existence is None or existence.id == excluir_id:
                 return slug
             n += 1

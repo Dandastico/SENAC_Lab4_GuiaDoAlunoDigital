@@ -88,4 +88,4 @@ class SecaoRead(SecaoBase):
 
 class CategoriaComSecoes(CategoriaRead):
     # carrega seções pré-carregadas de uma categoria
-    secoes: list[SecaoBase] = []
+    secoes: list[SecaoRead] = []
