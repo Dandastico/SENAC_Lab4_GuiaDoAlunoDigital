@@ -90,3 +90,44 @@ async def obter_categoria(
         secoes=[SecaoRead.model_validate(s) for s in secoes]
     )
 
+@categorias_router.post(
+    response_model=CategoriaRead,
+    status_code=status.HTTP_201_CREATED)
+async def criar_categoria(
+    dados: CategoriaCreate,
+    admin = Depends(require_admin),
+    svc: CategoriaService = Depends(_categoria_service)
+):
+    categoria = await svc.criar(dados)
+    await svc.repo.session.commit()
+    return categoria
+
+@categorias_router.patch(
+    "/{categoria_id}",
+    response_model=CategoriaRead)
+async def atualizar_categoria(
+    categoria_id: int,
+    dados: CategoriaUpdate,
+    admin = Depends(require_admin),
+    svc: CategoriaService = Depends(_categoria_service)
+):
+    categoria  = await svc.repo.get(categoria_id)
+    if not categoria:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    categoria = await svc.atualizar(categoria, dados)
+    await svc.repo.session.commit()
+    return categoria
+
+@categorias_router.delete(
+    "/{categoria_id}",
+    status_code=status.HTTP_204_NO_CONTENT)
+async def excluit_categoria(
+    categoria_id: int,
+    admin = Depends(require_admin),
+    svc: CategoriaService = Depends(_categoria_service)
+):
+    categoria = await svc.repo.get(categoria_id)
+    if not categoria:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    await svc.deletar(categoria)
+    await svc.repo.session.commit
