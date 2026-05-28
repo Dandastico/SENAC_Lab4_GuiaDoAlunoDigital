@@ -2,7 +2,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_criar_e_obter_artigo(client_admin):
-    resp = await client_admin.post("/artigo", json= {
+    resp = await client_admin.post("/artigos", json= {
         "titulo": "Como calcular sua média",
         "conteudo": "descrição do processo...",
         "secao_id": 1,

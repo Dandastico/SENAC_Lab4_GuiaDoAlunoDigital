@@ -1,7 +1,7 @@
 # Separa schemas de entrada e saída, não expondo o SQLAlchemy diretamente
 
 from datetime import datetime
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 from app.cms.models import ArtigoStatus
 
 # ===== Artigos =====
@@ -15,12 +15,27 @@ class ArtigoCreate(ArtigoBase):
     status: ArtigoStatus = ArtigoStatus.rascunho
     agendado_para: datetime | None = None
 
+    @model_validator(mode="after")
+    def agendado_exige_data(self):
+        if self.status == ArtigoStatus.agendado and self.agendado_para is None:
+            raise ValueError("agendado_para é obrigatório quando status é 'agendado'")
+        return self
+
 class ArtigoUpdate(BaseModel):
     titulo: str | None = Field(default=None, min_length=3, max_length=255)
     conteudo: str | None = None
     secao_id: int | None = None
     status: ArtigoStatus | None = None
     agendado_para: datetime | None = None
+
+    @model_validator(mode="after")
+    def agendado_exige_data(self):
+        status_mudou_para_agendado = self.status == ArtigoStatus.agendado
+        data_foi_explicitamente_removida = self.agendado_para is None
+        # só valida se status for explicitamente definido como agendado
+        if status_mudou_para_agendado and data_foi_explicitamente_removida:
+            raise ValueError("agendado_para é obrigatório quando status é 'agendado'")
+        return self
 
 class ArtigoRead(ArtigoBase):
     id: int

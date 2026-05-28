@@ -32,7 +32,7 @@ class CategoriaService:
         for k, v in update.items():
             setattr(categoria, k, v)
         await self.repo.session.flush()
-        await self.repo.refresh(categoria)
+        await self.repo.session.refresh(categoria)
         return categoria
     
     async def deletar(self, categoria: Categoria) -> None:
@@ -136,6 +136,7 @@ class ArtigoService:
     
     async def atualizar(self, artigo: Artigo, dados: ArtigoUpdate) -> Artigo:
         update = dados.model_dump(exclude_unset=True)
+        update["atualizado_em"] = datetime.now(timezone.utc)
         if "titulo" in update and update["titulo"] != artigo.titulo:
             update["slug"] = await self._slug_unico(update["titulo"])
         if update.get("status") == ArtigoStatus.publicado and not artigo.publicado_em:

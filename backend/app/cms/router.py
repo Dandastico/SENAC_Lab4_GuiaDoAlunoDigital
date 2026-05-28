@@ -26,6 +26,14 @@ async def listar(
     total = await svc.repo.count_publicados()
     return ArtigoList(items=items, total=total, page=page, page_size=page_size)
 
+@router.get("/{slug}", response_model=ArtigoRead)
+async def obter_por_slug(slug: str, svc: ArtigoService = Depends(_service)):
+    artigo = await svc.repo.get_by_slug(slug)
+    if not artigo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    return artigo
+
+
 @router.post("", response_model=ArtigoRead, status_code=status.HTTP_201_CREATED)
 async def criar(
     dados: ArtigoCreate,
@@ -78,19 +86,19 @@ async def lista_categorias(svc: CategoriaService = Depends(_categoria_service)):
 async def obter_categoria(
     slug: str,
     svc: CategoriaService = Depends(_categoria_service),
-    secao_repo_dep: AsyncSession = Depends(get_sessao)
 ):
     categoria = await svc.repo.get_by_slug(slug)
     if not categoria:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
     secao_repo = SecaoRepository(svc.repo.session)
-    secoes = await svc.repo.listar_da_categoria(categoria.id)
+    secoes = await secao_repo.listar_da_categoria(categoria.id)
     return CategoriaComSecoes(
-        **CategoriaRead.model_validate(categoria).model_dump,
+        **CategoriaRead.model_validate(categoria).model_dump(),
         secoes=[SecaoRead.model_validate(s) for s in secoes]
     )
 
 @categorias_router.post(
+    "",
     response_model=CategoriaRead,
     status_code=status.HTTP_201_CREATED)
 async def criar_categoria(
@@ -144,7 +152,7 @@ async def listar_secoes(
     categoria_id: int = Query(..., description="Filtrar por categoria"),
     svc: SecaoService = Depends(_secao_service)
 ):
-    return await svc.listar_da_categoria(categoria_id)
+    return await svc.repo.listar_da_categoria(categoria_id)
 
 @secoes_router.post("", response_model=SecaoRead, status_code=status.HTTP_201_CREATED)
 async def criar_secao(
@@ -188,4 +196,3 @@ async def excluir_secao(
     await svc.repo.delete(secao)
     await svc.repo.session.commit()
 
-    

@@ -16,7 +16,7 @@ class CategoriaRepository:
     async def listar(self, skip: int, limit: int) -> list[Categoria]:
         stmt = (
             select(Categoria)
-            .orger_by(Categoria.posicao, Categoria.nome)
+            .order_by(Categoria.posicao, Categoria.nome)
             .offset(skip)
             .limit(limit)
         )
@@ -78,7 +78,10 @@ class ArtigoRepository:
         return await self.session.get(Artigo, artigo_id)
     
     async def get_by_slug(self, slug: str) -> Artigo | None:
-        stmt = select(Artigo).where(Artigo.slug == slug)
+        stmt = select(Artigo).where(
+            Artigo.slug == slug,
+            Artigo.status == ArtigoStatus.publicado   # adicionar
+        )
         return (await self.session.execute(stmt)).scalar_one_or_none()
     
     async def list_publicados(self, skip: int, limit: int):
@@ -90,7 +93,7 @@ class ArtigoRepository:
             .limit(limit)
         )
         result = await self.session.execute(stmt)
-        return result.scalars().all()
+        return list(result.scalars().all())
     
     async def count_publicados(self) -> int:
         stmt = select(func.count()).select_from(Artigo).where(
