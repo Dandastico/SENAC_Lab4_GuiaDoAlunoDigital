@@ -15,7 +15,7 @@ class CategoriaService:
             nome=dados.nome,
             slug=slug,
             descricao=dados.descricao,
-            posicap=dados.posicao
+            posicao=dados.posicao
         )
         return await self.repo.add(categoria)
     
@@ -34,17 +34,10 @@ class CategoriaService:
         return categoria
     
     async def deletar(self, categoria: Categoria) -> None:
-        stmt = (
-            select(func.count())
-            .select_from(Artigo)
-            .join(Secao, Artigo.secao_id == Secao.id)
-            .where(Secao.categoria_id == categoria.id)
-        )
-        qtd = (await self.repo.session.execute(stmt)).scalar_one()
+        qtd = await self.artigo_repo.contar_ṕor_categoria(categoria.id)
         if qtd > 0:
-            raise HTTPException(
-                status.HTTP_409_CONFLICT,
-                f"Categoria tem {qtd} artigo(s) vinculado(s). "
+            raise ValueError(
+                f"Categoria tem {qtd} de artigo(s) vinculado(s). "
                 "Mova ou apague os artigos antes de remover a categoria."
             )
         await self.repo.delete(categoria)
@@ -77,8 +70,8 @@ class SecaoService:
         )
         return await self.repo.add(secao)
     
-    async def atualiar(self, secao: Secao, dados: SecaoUpdate) -> Secao:
-        update = dados.model_dump(exclude_unser=True)
+    async def atualizar(self, secao: Secao, dados: SecaoUpdate) -> Secao:
+        update = dados.model_dump(exclude_unset=True)
 
         nova_categoria = update.get("categoria_id", secao.categoria_id)
         if "categoria_id" in update and not await self.cat_repo.get(nova_categoria):

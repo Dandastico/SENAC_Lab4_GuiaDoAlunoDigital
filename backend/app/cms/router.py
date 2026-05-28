@@ -5,6 +5,8 @@ from app.security import require_admin
 from app.cms.repository import ArtigoRepository, CategoriaRepository, SecaoRepository
 from app.cms.service import ArtigoService, CategoriaService, SecaoService
 from app.cms.schemas import ArtigoCreate, ArtigoUpdate, ArtigoRead, ArtigoList
+from app.cms.schemas import CategoriaCreate, CategoriaUpdate, CategoriaRead, CategoriaComSecoes
+from app.cms.schemas import SecaoCreate, SecaoUpdate, SecaoRead
 
 # ===== Artigos =====
 
@@ -71,4 +73,20 @@ def _categoria_service(session: AsyncSession = Depends(get_sessao)) -> Categoria
 @categorias_router.get("", response_model=list[CategoriaRead])
 async def lista_categorias(svc: CategoriaService = Depends(_categoria_service)):
     return await svc.repo.listar(skip=0, limit=100)
+
+@categorias_router.get("/{slug}", response_model=CategoriaComSecoes)
+async def obter_categoria(
+    slug: str,
+    svc: CategoriaService = Depends(_categoria_service),
+    secao_repo_dep: AsyncSession = Depends(get_sessao)
+):
+    categoria = await svc.repo.get_by_slug(slug)
+    if not categoria:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    secao_repo = SecaoRepository(svc.repo.session)
+    secoes = await svc.repo.listar_da_categoria(categoria.id)
+    return CategoriaComSecoes(
+        **CategoriaRead.model_validate(categoria).model_dump,
+        secoes=[SecaoRead.model_validate(s) for s in secoes]
+    )
 
