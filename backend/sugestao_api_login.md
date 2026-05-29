@@ -52,7 +52,7 @@ Cliente                     FastAPI backend              Supabase
 
 ## 2. Configuração
 
-### `app/config.py` — adicionar duas variáveis
+### `app/config.py` — adicionar variáveis
 
 ```python
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -61,8 +61,9 @@ class Configuracoes(BaseSettings):
     database_url: str
     supabase_jwt_secret: str
     supabase_jwt_audience: str
-    supabase_url: str        # ex.: https://xyzxyz.supabase.co
-    supabase_anon_key: str   # chave pública anon do projeto Supabase
+    supabase_jwt_issuer: str   # ex.: https://xyzxyz.supabase.co/auth/v1
+    supabase_url: str          # ex.: https://xyzxyz.supabase.co
+    supabase_anon_key: str     # chave pública anon do projeto Supabase
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
 
@@ -75,6 +76,7 @@ configuracoes = Configuracoes()
 DATABASE_URL=postgresql+asyncpg://postgres:senha@db.xyzxyz.supabase.co:5432/postgres
 SUPABASE_JWT_SECRET=sua-jwt-secret-aqui
 SUPABASE_JWT_AUDIENCE=authenticated
+SUPABASE_JWT_ISSUER=https://xyzxyz.supabase.co/auth/v1
 SUPABASE_URL=https://xyzxyz.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
@@ -82,6 +84,8 @@ SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Onde encontrar cada valor no painel Supabase:
 - `SUPABASE_URL` e `SUPABASE_ANON_KEY` → **Project Settings → API**
 - `SUPABASE_JWT_SECRET` → **Project Settings → API → JWT Settings → JWT Secret**
+- `SUPABASE_JWT_ISSUER` → sempre `{SUPABASE_URL}/auth/v1`. Validar o `iss` garante que tokens
+  assinados pelo mesmo secret mas emitidos por outro projeto não sejam aceitos.
 
 ---
 
@@ -134,8 +138,19 @@ class Perfil(Base):
 
     # Não use ForeignKey("auth.users.id") aqui.
     # O schema `auth` é interno do Supabase e não está no Base.metadata;
-    # declarar o FK quebraria o `alembic revision --autogenerate` (tabela não encontrada).
-    # A constraint já existe no banco — o SQLAlchemy não precisa dela para funcionar.
+    # declarar o FK faz o `alembic revision --autogenerate` emitir um CREATE/ALTER
+    # tentando resolver a tabela "auth.users" e quebrar.
+    # A constraint já existe no banco (definida em db/schemas/schema_public.sql) —
+    # o SQLAlchemy não precisa dela para funcionar.
+    #
+    # ATENÇÃO — INCONSISTÊNCIA NO CÓDIGO EXISTENTE:
+    # `app/cms/models.py` declara hoje `ForeignKey("auth.users.id")` em `Artigo.autor_id`
+    # e em `cms/revisoes_de_artigos.editor_id` (se vier a ser modelado). Pelo mesmo motivo
+    # explicado acima, essas declarações também quebrarão o autogenerate. Antes de rodar
+    # `alembic revision --autogenerate` pela primeira vez, remova o `ForeignKey("auth.users.id")`
+    # de `Artigo.autor_id` em app/cms/models.py — deixe apenas `Mapped[UUID | None]`.
+    # Se preferir manter o FK em Python para documentação, configure Alembic com
+    # `include_object` para ignorar tabelas do schema `auth`.
     id:            Mapped[UUID]         = mapped_column(primary_key=True)
     nome_inteiro:  Mapped[str | None]   = mapped_column(Text)
     funcao:        Mapped[PerfilFuncao] = mapped_column(
@@ -183,7 +198,12 @@ from app.auth.models import PerfilFuncao
 
 class CadastroRequest(BaseModel):
     email: EmailStr
-    senha: str = Field(min_length=6, description="Mínimo 6 caracteres")
+    # Mínimo 8 caracteres (NIST SP 800-63B / OWASP). Mantenha alinhado com a
+    # configuração "Authentication → Sign In / Up → Minimum password length" do
+    # painel Supabase — se o backend exigir 8 mas o Supabase aceitar 6, fluxos
+    # alternativos (signup direto pelo painel, OAuth) deixariam usuários com
+    # senha mais fraca do que o validador da API.
+    senha: str = Field(min_length=8, description="Mínimo 8 caracteres")
     nome_completo: str = Field(min_length=2, max_length=150)
 
 
@@ -233,13 +253,16 @@ class PerfilRepository:
         self.session = session
 
     async def get(self, user_id: UUID | str) -> Perfil | None:
+        # session.get aceita PK como str ou UUID — o dialeto asyncpg converte.
         return await self.session.get(Perfil, user_id)
-
-    async def get_funcao(self, user_id: UUID | str) -> PerfilFuncao | None:
-        """Retorna apenas a funcao — evita carregar o objeto inteiro em hot paths."""
-        stmt = select(Perfil.funcao).where(Perfil.id == str(user_id))
-        return (await self.session.execute(stmt)).scalar_one_or_none()
 ```
+
+> **Sobre um `get_funcao` "leve":** versões anteriores deste documento sugeriam um método
+> `get_funcao(user_id) -> PerfilFuncao | None` que faria `SELECT funcao FROM perfis` em vez
+> de carregar a linha inteira. Foi removido porque (a) o `get_usuario_autenticado` do §7
+> também precisa de `nome_inteiro`, então o objeto inteiro acaba sendo necessário, e (b) o
+> custo de carregar 4 colunas pequenas em uma busca por PK é desprezível. Se no futuro
+> aparecer um caminho hot que só precise da `funcao`, adicione o método aqui — não antes.
 
 ---
 
@@ -252,6 +275,7 @@ disso.
 ```python
 # app/auth/service.py
 
+import asyncio
 import httpx
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -265,29 +289,79 @@ SUPABASE_HEADERS = {
     "Content-Type": "application/json",
 }
 
+# Timeout conservador para evitar handlers pendurados se o Supabase ficar lento.
+SUPABASE_TIMEOUT = httpx.Timeout(connect=5.0, read=10.0, write=5.0, pool=5.0)
+
+
+def _extrair_mensagem_supabase(payload: dict, fallback: str) -> str:
+    """
+    O GoTrue (Supabase Auth) usa campos diferentes dependendo da versão e do tipo de erro:
+    `error_description`, `error`, `message`, `msg`. Tentamos todos antes de cair no fallback.
+    """
+    for chave in ("error_description", "message", "msg", "error"):
+        valor = payload.get(chave)
+        if isinstance(valor, str) and valor:
+            return valor
+    return fallback
+
+
+def _erro_de_rede(exc: Exception) -> HTTPException:
+    """Converte falhas de comunicação com o Supabase em 503 com mensagem clara."""
+    return HTTPException(
+        status.HTTP_503_SERVICE_UNAVAILABLE,
+        "Serviço de autenticação indisponível. Tente novamente em alguns instantes.",
+    )
+
 
 class AuthService:
     def __init__(self, session: AsyncSession):
         self.perfil_repo = PerfilRepository(session)
 
-    async def cadastrar(self, dados: CadastroRequest) -> TokenResponse | None:
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                f"{configuracoes.supabase_url}/auth/v1/signup",
-                headers=SUPABASE_HEADERS,
-                json={
-                    "email": dados.email,
-                    "password": dados.senha,
-                    "data": {"full_name": dados.nome_completo},
-                    # "data" vira raw_user_meta_data no Supabase,
-                    # que o trigger usa para preencher perfis.nome_inteiro
-                },
-            )
+    async def _post_supabase(self, path: str, json: dict) -> httpx.Response:
+        """Centraliza POST ao Supabase + captura de erros de rede/timeout."""
+        try:
+            async with httpx.AsyncClient(timeout=SUPABASE_TIMEOUT) as client:
+                return await client.post(
+                    f"{configuracoes.supabase_url}{path}",
+                    headers=SUPABASE_HEADERS,
+                    json=json,
+                )
+        except (httpx.TimeoutException, httpx.NetworkError, httpx.RequestError) as exc:
+            raise _erro_de_rede(exc) from exc
 
-        if resp.status_code == 400:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, resp.json().get("msg", "Erro no cadastro"))
-        if resp.status_code == 422:
-            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "E-mail inválido ou senha muito fraca")
+    async def cadastrar(self, dados: CadastroRequest) -> TokenResponse | None:
+        resp = await self._post_supabase(
+            "/auth/v1/signup",
+            json={
+                "email": dados.email,
+                "password": dados.senha,
+                "data": {"full_name": dados.nome_completo},
+                # "data" vira raw_user_meta_data no Supabase,
+                # que o trigger usa para preencher perfis.nome_inteiro
+            },
+        )
+
+        # Mapeamento dos erros do GoTrue para HTTP da nossa API.
+        # Referência: https://supabase.com/docs/guides/auth/debugging/error-codes
+        if resp.status_code in (400, 422):
+            corpo = resp.json() if resp.content else {}
+            error_code = corpo.get("error_code") or corpo.get("code") or ""
+            msg = _extrair_mensagem_supabase(corpo, "Erro no cadastro")
+
+            # Usuário já existe é o caso mais comum aqui e precisa de status próprio.
+            # GoTrue costuma usar 422 com error_code "user_already_exists";
+            # versões antigas retornam 400 com message contendo "already registered".
+            if error_code == "user_already_exists" or "already" in msg.lower():
+                raise HTTPException(status.HTTP_409_CONFLICT, "E-mail já cadastrado")
+
+            if error_code in ("weak_password", "validation_failed") or resp.status_code == 422:
+                raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, msg)
+
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, msg)
+
+        if resp.status_code >= 500:
+            raise _erro_de_rede(Exception("Supabase 5xx"))
+
         resp.raise_for_status()
 
         dados_supabase = resp.json()
@@ -302,15 +376,32 @@ class AuthService:
         return await self._montar_token_response(dados_supabase)
 
     async def login(self, dados: LoginRequest) -> TokenResponse:
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                f"{configuracoes.supabase_url}/auth/v1/token?grant_type=password",
-                headers=SUPABASE_HEADERS,
-                json={"email": dados.email, "password": dados.senha},
-            )
+        resp = await self._post_supabase(
+            "/auth/v1/token?grant_type=password",
+            json={"email": dados.email, "password": dados.senha},
+        )
 
+        # O GoTrue retorna 400 tanto para credenciais inválidas quanto para
+        # e-mail não confirmado — precisamos distinguir pelo error_code para
+        # que o cliente saiba se deve mostrar "reenviar confirmação" ou
+        # "senha incorreta".
         if resp.status_code == 400:
+            corpo = resp.json() if resp.content else {}
+            error_code = corpo.get("error_code") or corpo.get("code") or ""
+            msg = _extrair_mensagem_supabase(corpo, "")
+
+            if error_code == "email_not_confirmed" or "not confirmed" in msg.lower():
+                raise HTTPException(
+                    status.HTTP_403_FORBIDDEN,
+                    "E-mail ainda não confirmado. Verifique sua caixa de entrada.",
+                )
+            # invalid_grant / invalid_credentials → 401 genérico, sem revelar
+            # se o e-mail existe ou se foi a senha que está errada.
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "E-mail ou senha incorretos")
+
+        if resp.status_code >= 500:
+            raise _erro_de_rede(Exception("Supabase 5xx"))
+
         resp.raise_for_status()
 
         dados_supabase = resp.json()
@@ -318,18 +409,37 @@ class AuthService:
 
     async def _montar_token_response(self, dados_supabase: dict) -> TokenResponse:
         """Consulta o perfil no banco e monta a resposta final."""
-        user_id = dados_supabase["user"]["id"]
-        access_token = dados_supabase["access_token"]
+        try:
+            user_id = dados_supabase["user"]["id"]
+            access_token = dados_supabase["access_token"]
+        except KeyError as exc:
+            # Resposta inesperada do Supabase — não deveria acontecer se chegou até aqui.
+            raise HTTPException(
+                status.HTTP_502_BAD_GATEWAY,
+                "Resposta inválida do serviço de autenticação",
+            ) from exc
+
         # `or 3600` cobre dois casos: chave ausente E chave presente com valor null.
         # dict.get(key, default) só usa o default quando a chave não existe;
         # se Supabase retornar "expires_in": null, .get() devolve None e
         # TokenResponse(expires_in=None) falharia na validação Pydantic.
         expires_in = dados_supabase.get("expires_in") or 3600
 
+        # Em arquiteturas com read replica (Supabase Pro+) há lag de replicação:
+        # o trigger commita no primary, mas a sessão pode ler da réplica antes do
+        # registro replicar. Para evitar 500 espúrio logo após o signup, fazemos
+        # 1 retry curto antes de desistir.
         perfil = await self.perfil_repo.get(user_id)
         if perfil is None:
-            # O trigger ainda não rodou (improvável) ou o perfil foi deletado.
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Perfil não encontrado")
+            await asyncio.sleep(0.1)
+            perfil = await self.perfil_repo.get(user_id)
+        if perfil is None:
+            # Trigger não rodou (improvável — é AFTER INSERT na mesma transação)
+            # ou o perfil foi deletado entre o auth.users e a consulta.
+            raise HTTPException(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Perfil não encontrado após autenticação",
+            )
 
         return TokenResponse(
             access_token=access_token,
@@ -343,6 +453,17 @@ class AuthService:
         )
 ```
 
+**Por que `409 Conflict` para usuário já existente?** É o status semanticamente correto
+(RFC 9110 §15.5.10) e permite ao frontend tratar esse caso específico (oferecer "esqueci
+minha senha" em vez de pedir senha de novo). Mapear para 422 — como versões anteriores
+deste documento — mostrava ao usuário a mensagem "E-mail inválido ou senha muito fraca",
+confundindo o caso de uso mais comum do endpoint.
+
+**Por que `403` para e-mail não confirmado?** O usuário está provando que tem a senha
+correta — não é um problema de autenticação (401), é um problema de autorização: a conta
+existe mas ainda não está habilitada. Isso permite ao cliente disparar o fluxo de reenvio
+de confirmação (`POST /auth/v1/resend`) sem ambiguidade.
+
 **Por que não usar `supabase-py`?**
 
 A biblioteca oficial `supabase-py` funciona bem, mas adiciona uma dependência pesada
@@ -353,11 +474,29 @@ revisitar essa decisão.
 
 ---
 
-## 7. `security.py` — corrigir verificação de `funcao`
+## 7. `security.py` — migrar verificação de `funcao` para `public.perfis`
 
-O `security.py` atual lê a `funcao` de `user_metadata`, que **o próprio usuário pode
-alterar** via SDK do Supabase. Qualquer usuário poderia se autopromover a admin.
-A fonte de verdade é `public.perfis.funcao`, que só é alterada pelo servidor.
+> **Correção factual em relação a versões anteriores deste documento:**
+> versões antigas afirmavam que o `security.py` atual lia a `funcao` de `user_metadata`
+> (que o próprio usuário pode alterar). Essa afirmação é **incorreta**: o código atual
+> ([app/security.py:25](app/security.py#L25)) lê de `app_metadata.funcao`, que **não**
+> pode ser alterado pelo cliente — só via `service_role` ou Admin API. Portanto, **não há**
+> vulnerabilidade de auto-promoção no estado atual.
+>
+> A migração proposta abaixo continua sendo a opção correta, mas por **outros motivos**:
+>
+> 1. **Fonte única de verdade.** A política RLS em `cms.artigos` ([schema_cms.sql:104-108](../db/schemas/schema_cms.sql))
+>    já consulta `public.perfis.funcao`. Hoje, se um admin for promovido por UPDATE direto
+>    em `public.perfis` (caminho recomendado no §11), a política RLS reconhece a mudança
+>    imediatamente, mas o backend continua vendo a `funcao` antiga do `app_metadata` do JWT
+>    até o usuário relogar. Centralizar em `public.perfis` elimina essa janela de inconsistência.
+> 2. **Operação simplificada.** Hoje, para promover alguém a admin é preciso fazer DOIS
+>    passos: UPDATE em `public.perfis` (para RLS) E chamar a Admin API do Supabase para
+>    atualizar `app_metadata` (para o backend). Com a migração, basta o UPDATE em
+>    `public.perfis`.
+> 3. **Ninguém preencheu `app_metadata.funcao` ainda.** Como o trigger
+>    `criar_perfil_novo_usuario` só preenche `public.perfis`, todo `require_admin` atual
+>    retorna 403 — o sistema está travado até que alguém implemente esse passo manual.
 
 ```python
 # app/security.py — versão corrigida
@@ -375,28 +514,43 @@ bearer = HTTPBearer(auto_error=False)
 
 
 def _decodificar_jwt(token: str) -> dict:
-    try:
-        return jwt.decode(
-            token,
-            configuracoes.supabase_jwt_secret,
-            algorithms=["HS256"],
-            audience=configuracoes.supabase_jwt_audience,
-        )
-    except jwt.PyJWTError as e:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, str(e))
+    """
+    Valida assinatura + audience + issuer + expiração (verify_exp é default no PyJWT).
+    Validar `iss` impede que um token assinado com o mesmo secret mas emitido por outro
+    projeto Supabase seja aceito — relevante se o secret for compartilhado/reaproveitado.
+    """
+    return jwt.decode(
+        token,
+        configuracoes.supabase_jwt_secret,
+        algorithms=["HS256"],
+        audience=configuracoes.supabase_jwt_audience,
+        issuer=configuracoes.supabase_jwt_issuer,
+    )
 
 
 async def get_current_user(
     creds: HTTPAuthorizationCredentials | None = Depends(bearer),
 ) -> dict | None:
     """
-    Valida o JWT e retorna o payload. Não consulta o banco.
-    Use esta dependência em rotas públicas que apenas identificam
-    o usuário opcionalmente (ex.: registrar visualização).
+    Dependência REALMENTE opcional para rotas públicas que apenas querem identificar
+    o usuário quando ele estiver logado (ex.: registrar visualização em cms.visualizacoes).
+
+    Comportamento:
+    - Sem token             → retorna None (usuário anônimo, rota continua).
+    - Token expirado/inválido → retorna None (trata como anônimo).
+    - Token válido          → retorna o payload do JWT.
+
+    Importante: esta dependência NÃO lança 401. Se uma rota pública carrega um token
+    expirado, o pior que pode acontecer é a request ser tratada como anônima — não
+    quebrar a leitura pública. Rotas que exigem autenticação devem usar
+    `get_usuario_autenticado` ou os helpers `require_*` abaixo.
     """
     if creds is None:
         return None
-    return _decodificar_jwt(creds.credentials)
+    try:
+        return _decodificar_jwt(creds.credentials)
+    except jwt.PyJWTError:
+        return None
 
 
 async def get_usuario_autenticado(
@@ -404,14 +558,24 @@ async def get_usuario_autenticado(
     sessao: AsyncSession = Depends(get_sessao),
 ) -> dict:
     """
-    Valida o JWT e carrega o perfil do banco.
-    Retorna dict com chaves: sub, email, funcao, nome_inteiro.
-    Use esta dependência em rotas que precisam da funcao do usuário.
+    Valida o JWT, carrega o perfil do banco e retorna dict com:
+    sub, email, funcao, nome_inteiro.
+    Use em rotas que precisam da identidade ou da funcao do usuário.
     """
     if creds is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token não fornecido")
 
-    payload = _decodificar_jwt(creds.credentials)
+    try:
+        payload = _decodificar_jwt(creds.credentials)
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token expirado")
+    except jwt.InvalidAudienceError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token com audience inválida")
+    except jwt.InvalidIssuerError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de issuer inválido")
+    except jwt.PyJWTError as e:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, f"Token inválido: {e}")
+
     user_id = payload.get("sub")
     if not user_id:
         # JWT válido mas sem claim "sub" — token malformado, não é erro de perfil.
@@ -442,7 +606,10 @@ async def require_professor_ou_admin(
     usuario: dict = Depends(get_usuario_autenticado),
 ) -> dict:
     """Exige funcao professor ou admin."""
-    if usuario["funcao"] not in (PerfilFuncao.professor, PerfilFuncao.admin):
+    # Normaliza para PerfilFuncao para garantir que comparação funcione mesmo se
+    # a funcao chegar como string crua de um cache externo no futuro.
+    funcao = PerfilFuncao(usuario["funcao"])
+    if funcao not in (PerfilFuncao.professor, PerfilFuncao.admin):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Acesso restrito a professores e admins")
     return usuario
 
@@ -450,16 +617,16 @@ async def require_professor_ou_admin(
 async def require_admin(
     usuario: dict = Depends(get_usuario_autenticado),
 ) -> dict:
-    """Exige funcao admin. Substitui a versão anterior que lia user_metadata."""
-    if usuario["funcao"] != PerfilFuncao.admin:
+    """Exige funcao admin. Substitui a versão anterior que lia app_metadata."""
+    if PerfilFuncao(usuario["funcao"]) != PerfilFuncao.admin:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Apenas admins")
     return usuario
 ```
 
 **Impacto nas rotas existentes:** os endpoints que já usam `Depends(require_admin)`
 continuam funcionando sem alteração de assinatura. A única mudança é que agora a
-`funcao` vem do banco (`public.perfis`) em vez do JWT — o que é mais seguro e
-sempre atualizado.
+`funcao` vem do banco (`public.perfis`) em vez do JWT — o que centraliza a regra com
+a política RLS e dispensa o passo manual de sincronizar `app_metadata`.
 
 **Custo:** uma query extra por requisição protegida (busca por PK UUID —
 milissegundos). Se isso virar gargalo, use um cache em memória (ex.: `cachetools`)
@@ -643,11 +810,13 @@ crie um endpoint separado acessível apenas por admins já existentes:
 
 ```python
 # Em app/auth/router.py — adicionar/completar os imports do §8 com:
+# from uuid import UUID
 # from fastapi import APIRouter, Depends, HTTPException, Path, status
+# from sqlalchemy import select, func
 # from pydantic import BaseModel
 # from app.security import get_usuario_autenticado, require_admin
 # from app.auth.repository import PerfilRepository
-# from app.auth.models import PerfilFuncao
+# from app.auth.models import Perfil, PerfilFuncao
 
 class AlterarFuncaoRequest(BaseModel):
     funcao: PerfilFuncao
@@ -655,14 +824,40 @@ class AlterarFuncaoRequest(BaseModel):
 @auth_router.patch("/perfis/{user_id}/funcao", response_model=PerfilRead)
 async def alterar_funcao(
     dados: AlterarFuncaoRequest,       # body sem default — deve vir ANTES de params com default
-    user_id: str = Path(...),
+    user_id: UUID = Path(..., description="UUID do usuário em auth.users"),
     admin: dict = Depends(require_admin),
     sessao: AsyncSession = Depends(get_sessao),
 ):
+    # ----- Guard 1: auto-modificação -----
+    # Impede que um admin se rebaixe (ou se promova, no caso simétrico). O motivo
+    # principal é evitar o cenário onde o único admin do sistema se rebaixa para
+    # estudante e o sistema fica sem ninguém capaz de gerenciar funções pela API
+    # — a recuperação exigiria UPDATE manual em public.perfis via SQL Editor.
+    # Admin promovendo outro admin → permitido. Admin alterando a si mesmo → bloqueado.
+    if str(user_id) == admin["sub"]:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Admin não pode alterar a própria funcao. Peça a outro admin.",
+        )
+
     repo = PerfilRepository(sessao)
     perfil = await repo.get(user_id)
     if not perfil:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Usuário não encontrado")
+
+    # ----- Guard 2: rebaixar último admin -----
+    # Mesmo que o admin esteja rebaixando OUTRO admin, precisamos garantir que
+    # pelo menos um admin permaneça. Caso contrário o sistema fica sem ninguém
+    # capaz de promover novos admins via API.
+    if perfil.funcao == PerfilFuncao.admin and dados.funcao != PerfilFuncao.admin:
+        stmt = select(func.count()).select_from(Perfil).where(Perfil.funcao == PerfilFuncao.admin)
+        total_admins = (await sessao.execute(stmt)).scalar_one()
+        if total_admins <= 1:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "Não é possível rebaixar o último admin do sistema.",
+            )
+
     perfil.funcao = dados.funcao
     await sessao.flush()
     await sessao.refresh(perfil)
@@ -681,6 +876,11 @@ async def alterar_funcao(
         funcao=funcao,
     )
 ```
+
+> **Sobre `user_id: UUID = Path(...)`:** se o cliente enviar uma string que não
+> seja um UUID válido, o FastAPI responde 422 automaticamente, sem chegar ao
+> handler. Versões anteriores usavam `str` e deixavam o erro vazar até o banco
+> com `WHERE id = '<lixo>'`, gerando 404 confuso ou erro de tipo do PostgreSQL.
 
 ---
 
@@ -742,10 +942,35 @@ mais nada no código.
 - **Expiração do JWT**: o token do Supabase expira em 1 hora por padrão.
   Configure em **Authentication → JWT expiry** e instrua o frontend a usar o
   `refresh_token` antes do vencimento.
+- **RLS é IRRELEVANTE para este backend**: o FastAPI conecta no Postgres via
+  `DATABASE_URL` usando um role privilegiado (normalmente `postgres` ou
+  `service_role`), que **bypassa toda a Row Level Security**. Isso significa:
+    - As políticas RLS já declaradas em `cms.artigos`
+      ([schema_cms.sql:94-109](../db/schemas/schema_cms.sql)) **não protegem nada**
+      quando o acesso vem por essa API. A segurança depende 100% das dependências
+      `require_admin` / `require_professor_ou_admin` nas rotas Python.
+    - **Implicação direta:** remover ou esquecer um `Depends(require_admin)` em
+      qualquer endpoint do CMS expõe imediatamente a operação para qualquer
+      usuário autenticado (ou anônimo, se a rota for pública). Faça code review
+      explícito disso a cada novo endpoint mutável.
+    - As políticas RLS continuam úteis se algum dia o frontend conversar
+      direto com PostgREST/Supabase usando a `anon_key` ou JWT do usuário —
+      nesse caso elas voltam a valer. Mantê-las declaradas é defesa em profundidade.
 - **RLS em `public.perfis`**: atualmente não há RLS na tabela de perfis
-  (`schema_public.sql` não declara políticas). Se você expor `perfis` via
-  PostgREST/Supabase diretamente (não pela API FastAPI), adicione políticas
-  para que cada usuário só leia/escreva o próprio perfil.
+  (`schema_public.sql` não declara políticas). Pelos motivos acima, isso não
+  afeta esta API, mas se você expor `perfis` via PostgREST/Supabase diretamente,
+  adicione políticas para que cada usuário só leia/escreva o próprio perfil.
+- **Rate limiting de `/auth/login` e `/auth/cadastro`**: o Supabase tem rate
+  limiting próprio, mas como o FastAPI proxia essas chamadas, todas saem do
+  mesmo IP do servidor — o limite do Supabase fica praticamente inútil.
+  Configure rate limiting na camada FastAPI (ex.: `slowapi` por IP do cliente,
+  com limite de ~5 tentativas/min por IP em `/auth/login`) antes de ir a
+  produção. Sem isso, força-bruta de senha é viável apesar do mínimo de 8 chars.
+- **Logout (revogar refresh token)**: o documento não expõe `/auth/logout`.
+  Se um refresh token vazar, ele continua válido pelo TTL padrão (7 dias).
+  Para tornar logout efetivo, adicione um endpoint que chame
+  `POST /auth/v1/logout` no Supabase com o `Bearer <access_token>` do usuário.
+  Isso invalida o refresh token no servidor.
 - **`email` não está em `public.perfis`**: o e-mail fica em `auth.users`, que
   o backend não acessa diretamente pelo SQLAlchemy (é schema interno do Supabase).
   O e-mail disponível nos endpoints vem do payload JWT (`payload["email"]`).
