@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.cms.models import Artigo, ArtigoStatus, Categoria, Secao
 
 class CategoriaRepository:
-    def __init__(self, session:AsyncSession):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
     async def get(self, categoria_id: int) -> Categoria | None:
@@ -73,16 +73,29 @@ class SecaoRepository:
 class ArtigoRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
-    
+
     async def get(self, artigo_id: int) -> Artigo | None:
         return await self.session.get(Artigo, artigo_id)
-    
+
     async def get_by_slug(self, slug: str) -> Artigo | None:
+        # Usado pelo endpoint público GET /artigos/{slug}, que deve mostrar
+        # apenas artigos publicados. NÃO usar este método para checagem de
+        # uniqueness do slug — para isso use `existe_slug` (ver abaixo).
         stmt = select(Artigo).where(
             Artigo.slug == slug,
-            Artigo.status == ArtigoStatus.publicado   # adicionar
+            Artigo.status == ArtigoStatus.publicado
         )
         return (await self.session.execute(stmt)).scalar_one_or_none()
+
+    async def existe_slug(self, slug: str, excluir_id: int | None = None) -> bool:
+        # Verifica se o slug já está em uso em QUALQUER status (rascunho,
+        # publicado, escondido, agendado). A constraint UNIQUE no banco é sobre
+        # todos os status, então o checador de uniqueness precisa ver todos.
+        # `excluir_id` permite ignorar o próprio artigo num update.
+        stmt = select(func.count()).select_from(Artigo).where(Artigo.slug == slug)
+        if excluir_id is not None:
+            stmt = stmt.where(Artigo.id != excluir_id)
+        return (await self.session.execute(stmt)).scalar_one() > 0
     
     async def list_publicados(self, skip: int, limit: int):
         stmt = (

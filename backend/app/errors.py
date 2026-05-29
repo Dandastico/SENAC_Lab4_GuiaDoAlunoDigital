@@ -8,7 +8,7 @@ async def integrity_error_handler(request: Request, exc: IntegrityError):
     if isinstance(orig, asyncpg.UniqueViolationError):
         code = status.HTTP_409_CONFLICT
     elif isinstance(orig, (asyncpg.CheckViolationError, asyncpg.ForeignKeyViolationError)):
-        code = status.HTTP_422_UNPROCESSABLE_CONTENT
+        code = status.HTTP_422_UNPROCESSABLE_ENTITY
     else:
         code = status.HTTP_409_CONFLICT
     return JSONResponse(

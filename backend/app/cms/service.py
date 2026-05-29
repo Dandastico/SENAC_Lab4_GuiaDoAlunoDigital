@@ -142,7 +142,7 @@ class ArtigoService:
             raise ValueError("agendado_para é obrigatório quando status é 'agendado'")
         update["atualizado_em"] = datetime.now(timezone.utc)
         if "titulo" in update and update["titulo"] != artigo.titulo:
-            update["slug"] = await self._slug_unico(update["titulo"])
+            update["slug"] = await self._slug_unico(update["titulo"], excluir_id=artigo.id)
         if update.get("status") == ArtigoStatus.publicado and not artigo.publicado_em:
             update["publicado_em"] = datetime.now(timezone.utc)
         for k, v in update.items():
@@ -150,11 +150,14 @@ class ArtigoService:
         await self.repo.session.flush()
         await self.repo.session.refresh(artigo)
         return artigo
-    
-    async def _slug_unico(self, titulo: str) -> str:
+
+    async def _slug_unico(self, titulo: str, excluir_id: int | None = None) -> str:
+        # Usa existe_slug (que considera TODOS os status) para uniqueness:
+        # o get_by_slug filtra publicado e levaria a violação da UNIQUE
+        # constraint quando o slug colidisse com um rascunho existente.
         base = slugify(titulo)
         slug, n = base, 1
-        while await self.repo.get_by_slug(slug):
+        while await self.repo.existe_slug(slug, excluir_id=excluir_id):
             n += 1
             slug = f"{base}-{n}"
         return slug

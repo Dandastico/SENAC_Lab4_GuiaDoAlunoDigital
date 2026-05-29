@@ -4,10 +4,8 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 from sqlalchemy import Text, Integer, SmallInteger, DateTime, ForeignKey, UniqueConstraint, Enum as SAEnum
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-class Base(DeclarativeBase):
-    pass
+from sqlalchemy.orm import Mapped, mapped_column
+from app.base import Base
 
 # ------------------ Artigos ------------------
 
@@ -23,7 +21,11 @@ class Artigo(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     secao_id: Mapped[int | None] = mapped_column(ForeignKey("cms.secoes.id"))
-    autor_id: Mapped[UUID | None] = mapped_column(ForeignKey("auth.users.id"))
+    # Não declaramos ForeignKey("auth.users.id"): o schema `auth` é interno do
+    # Supabase e não pertence ao Base.metadata, então declará-lo aqui quebraria
+    # `alembic revision --autogenerate`. A constraint já existe no banco
+    # (definida em db/schemas/schema_cms.sql).
+    autor_id: Mapped[UUID | None] = mapped_column()
     titulo: Mapped[str] = mapped_column(Text, nullable=False)
     slug: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     conteudo: Mapped[str] = mapped_column(Text, nullable=False)

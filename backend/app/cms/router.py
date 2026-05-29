@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_sessao
@@ -40,7 +41,9 @@ async def criar(
     admin = Depends(require_admin),
     svc: ArtigoService = Depends(_service),
 ):
-    artigo = await svc.criar(dados, autor_id=admin["sub"])
+    # admin["sub"] vem do JWT como string. ArtigoService.criar espera UUID;
+    # converter explicitamente evita depender da coerção implícita do asyncpg.
+    artigo = await svc.criar(dados, autor_id=UUID(admin["sub"]))
     await svc.repo.session.commit()
     return artigo
 
@@ -132,7 +135,7 @@ async def atualizar_categoria(
 @categorias_router.delete(
     "/{categoria_id}",
     status_code=status.HTTP_204_NO_CONTENT)
-async def excluit_categoria(
+async def excluir_categoria(
     categoria_id: int,
     admin = Depends(require_admin),
     svc: CategoriaService = Depends(_categoria_service)
