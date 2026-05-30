@@ -20,24 +20,15 @@ alembic==1.13.3             # migração de banco de dados
 # ======================================
 # AUTENTICAÇÃO - JWT do Supabase
 # ======================================
-pyjwt[crypto]==2.9.0        # valida JWTs do Supabase. [crypto] traz cryptography
-                            # para RS256/ES256 — defesa em profundidade caso o
-                            # projeto migre das chaves simétricas (HS256).
-passlib[bcrypt]==1.7.4      # ROADMAP: hash local de senha se sair do Supabase.
-                            # Atualmente NÃO importado em nenhum lugar do código.
-
+pyjwt[crypto]==2.9.0
+passlib[bcrypt]==1.7.4
 # ======================================
 # CLIENTE HTTP - chamadas a APIs externas
 # ======================================
-httpx==0.27.2               # cliente HTTP async. Usado em auth/service.py para
-                            # falar com a REST API do Supabase Auth.
-
+httpx==0.27.2
 # ======================================
 # UTILITÁRIOS
 # ======================================
-python-multipart==0.0.18    # form data / upload de arquivos. Atualmente NÃO
-                            # usado (sem Form()/File()/UploadFile), mas é dep
-                            # transitiva de fastapi[standard].
-python-slugify==8.0.4       # gera slugs de artigos e categorias (cms/service.py).
-python-dateutil==2.9.0      # ROADMAP: manipulação avançada de datas. Atualmente
-                            # NÃO importado (o código usa apenas stdlib datetime).
+python-multipart==0.0.18    
+python-slugify==8.0.4   
+python-dateutil==2.9.0 
