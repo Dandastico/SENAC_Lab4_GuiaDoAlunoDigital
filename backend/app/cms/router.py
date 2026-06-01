@@ -84,10 +84,10 @@ admin_artigos_router = APIRouter(prefix="/admin/artigos", tags=["artigos-admin"]
 
 @admin_artigos_router.get("", response_model=ArtigoList)
 async def listar_admin(
-    status_filtro: ArtigoStatus | None = Query(
+    status_filtro: str | None = Query(
         None, alias="status",
         description="Filtra por status (rascunho, publicado, escondido, "
-                    "agendado). Vazio = todos os status.",
+                    "agendado). Vazio/ausente = todos os status.",
     ),
     secao_id: int | None = Query(None, description="Filtra por seção"),
     page: int = Query(1, ge=1),
@@ -95,11 +95,28 @@ async def listar_admin(
     admin = Depends(require_admin),
     svc: ArtigoService = Depends(_service),
 ):
+    # Recebemos o status como string crua (não como `ArtigoStatus | None`)
+    # porque um cliente que envie o parâmetro presente mas vazio (`?status=`)
+    # faria o Pydantic rejeitar "" com 422, quebrando justamente a listagem
+    # "todos os status". Aqui "" e None significam ambos "sem filtro".
+    status_norm = (status_filtro or "").strip()
+    if not status_norm:
+        status_enum: ArtigoStatus | None = None
+    else:
+        try:
+            status_enum = ArtigoStatus(status_norm)
+        except ValueError:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                f"status inválido: {status_norm!r}. "
+                f"Valores aceitos: {', '.join(s.value for s in ArtigoStatus)}.",
+            )
+
     skip = (page - 1) * page_size
     items = await svc.repo.listar_admin(
-        skip, page_size, status=status_filtro, secao_id=secao_id
+        skip, page_size, status=status_enum, secao_id=secao_id
     )
-    total = await svc.repo.contar_admin(status=status_filtro, secao_id=secao_id)
+    total = await svc.repo.contar_admin(status=status_enum, secao_id=secao_id)
     return ArtigoList(items=items, total=total, page=page, page_size=page_size)
 
 @admin_artigos_router.get("/{artigo_id}", response_model=ArtigoRead)
@@ -194,10 +211,13 @@ def _secao_service(session: AsyncSession = Depends(get_sessao)) -> SecaoService:
 
 @secoes_router.get("", response_model=list[SecaoRead])
 async def listar_secoes(
-    categoria_id: int = Query(..., description="Filtrar por categoria"),
+    categoria_id: int | None = Query(
+        None,
+        description="Filtra por categoria. Ausente = todas as seções.",
+    ),
     svc: SecaoService = Depends(_secao_service)
 ):
-    return await svc.repo.listar_da_categoria(categoria_id)
+    return await svc.repo.listar(categoria_id)
 
 @secoes_router.post("", response_model=SecaoRead, status_code=status.HTTP_201_CREATED)
 async def criar_secao(

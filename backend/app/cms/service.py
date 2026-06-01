@@ -138,8 +138,15 @@ class ArtigoService:
         update = dados.model_dump(exclude_unset=True)
         novo_status = update.get("status", artigo.status)
         nova_data = update.get("agendado_para", artigo.agendado_para)
+        nova_secao = update.get("secao_id", artigo.secao_id)
         if novo_status == ArtigoStatus.agendado and nova_data is None:
             raise ValueError("agendado_para é obrigatório quando status é 'agendado'")
+        # Espelha o CHECK `artigo_publicado_exige_secao`, validado contra o
+        # estado final (campos enviados + os já persistidos no artigo).
+        if novo_status in (ArtigoStatus.publicado, ArtigoStatus.agendado) and nova_secao is None:
+            raise ValueError(
+                "secao_id é obrigatório quando status é 'publicado' ou 'agendado'"
+            )
         if "titulo" in update and update["titulo"] != artigo.titulo:
             update["slug"] = await self._slug_unico(update["titulo"], excluir_id=artigo.id)
         if update.get("status") == ArtigoStatus.publicado and not artigo.publicado_em:

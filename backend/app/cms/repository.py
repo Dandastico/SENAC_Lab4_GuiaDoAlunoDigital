@@ -59,6 +59,16 @@ class SecaoRepository:
             .order_by(Secao.posicao, Secao.nome)
         )
         return list((await self.session.execute(stmt)).scalars().all())
+
+    async def listar(self, categoria_id: int | None = None) -> list[Secao]:
+        # Lista seções; quando `categoria_id` é None, devolve todas as seções
+        # (visão global usada pelo painel admin). `categoria_id` entra como
+        # ordenação primária para manter as seções agrupadas por categoria.
+        stmt = select(Secao)
+        if categoria_id is not None:
+            stmt = stmt.where(Secao.categoria_id == categoria_id)
+        stmt = stmt.order_by(Secao.categoria_id, Secao.posicao, Secao.nome)
+        return list((await self.session.execute(stmt)).scalars().all())
     
     async def add(self, secao: Secao) -> Secao:
         self.session.add(secao)

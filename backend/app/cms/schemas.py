@@ -22,6 +22,16 @@ class ArtigoCreate(ArtigoBase):
             raise ValueError("agendado_para é obrigatório quando status é 'agendado'")
         return self
 
+    @model_validator(mode="after")
+    def publicado_exige_secao(self):
+        # Espelha o CHECK `artigo_publicado_exige_secao` do banco para que a
+        # falha vire um 422 limpo na borda, em vez da mensagem crua do Postgres.
+        if self.status in (ArtigoStatus.publicado, ArtigoStatus.agendado) and self.secao_id is None:
+            raise ValueError(
+                "secao_id é obrigatório quando status é 'publicado' ou 'agendado'"
+            )
+        return self
+
 class ArtigoUpdate(BaseModel):
     titulo: str | None = Field(default=None, min_length=3, max_length=255)
     conteudo: str | None = Field(default=None, min_length=1)
