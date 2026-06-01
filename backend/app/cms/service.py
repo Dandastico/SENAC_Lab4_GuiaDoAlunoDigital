@@ -140,7 +140,6 @@ class ArtigoService:
         nova_data = update.get("agendado_para", artigo.agendado_para)
         if novo_status == ArtigoStatus.agendado and nova_data is None:
             raise ValueError("agendado_para é obrigatório quando status é 'agendado'")
-        update["atualizado_em"] = datetime.now(timezone.utc)
         if "titulo" in update and update["titulo"] != artigo.titulo:
             update["slug"] = await self._slug_unico(update["titulo"], excluir_id=artigo.id)
         if update.get("status") == ArtigoStatus.publicado and not artigo.publicado_em:

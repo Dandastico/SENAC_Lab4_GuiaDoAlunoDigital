@@ -1,6 +1,7 @@
 # Separa schemas de entrada e saída, não expondo o SQLAlchemy diretamente
 
 from datetime import datetime
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 from app.cms.models import ArtigoStatus
 
@@ -32,7 +33,7 @@ class ArtigoRead(ArtigoBase):
     id: int
     slug: str
     status: ArtigoStatus
-    autor_id: str | None
+    autor_id: UUID | None
     agendado_para: datetime | None
     publicado_em: datetime | None
     criado_em: datetime
