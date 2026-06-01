@@ -1,0 +1,34 @@
+# ======================================
+# FastAPI e servidor ASGI (Asynchronous Server Gateway Interface)
+# ======================================
+fastapi[standard]==0.136.1  # framework + uvicorn + httpx + utils
+
+# ======================================
+# VALIDAÇÃO DOS DADOS
+# ======================================
+pydantic==2.9.2             # validação e serialização
+pydantic-settings==2.6.1    # gerencia variáveis de ambiente
+email-validator==2.2.0      # valida emails em campos Pydantic (EmailStr)
+
+# ======================================
+# BANCO DE DADOS - Postgres async
+# ======================================
+sqlalchemy[asyncio]==2.0.36 # ORM com suporte async (mapeamento de objetos relacionais)
+asyncpg==0.30.0             # driver async nativo do Postgres
+alembic==1.13.3             # migração de banco de dados
+
+# ======================================
+# AUTENTICAÇÃO - JWT do Supabase
+# ======================================
+pyjwt[crypto]==2.9.0
+passlib[bcrypt]==1.7.4
+# ======================================
+# CLIENTE HTTP - chamadas a APIs externas
+# ======================================
+httpx==0.27.2
+# ======================================
+# UTILITÁRIOS
+# ======================================
+python-multipart==0.0.18    
+python-slugify==8.0.4   
+python-dateutil==2.9.0 

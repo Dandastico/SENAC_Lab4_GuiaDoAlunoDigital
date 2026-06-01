@@ -1,0 +1,7 @@
+# inclui todas as dependências de produção
+-r requirements.txt
+
+pytest==8.3.3           # framework de testes
+pytest-asyncio==0.24.0  # suporte a testes async
+pytest-cov==5.0.0       # cobertura de testes
+ruff==0.7.4             # linter + formatter moderno
