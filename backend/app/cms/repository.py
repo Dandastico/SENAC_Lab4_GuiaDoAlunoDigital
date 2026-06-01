@@ -78,9 +78,6 @@ class ArtigoRepository:
         return await self.session.get(Artigo, artigo_id)
 
     async def get_by_slug(self, slug: str) -> Artigo | None:
-        # Usado pelo endpoint público GET /artigos/{slug}, que deve mostrar
-        # apenas artigos publicados. NÃO usar este método para checagem de
-        # uniqueness do slug — para isso use `existe_slug` (ver abaixo).
         stmt = select(Artigo).where(
             Artigo.slug == slug,
             Artigo.status == ArtigoStatus.publicado
@@ -89,9 +86,7 @@ class ArtigoRepository:
 
     async def existe_slug(self, slug: str, excluir_id: int | None = None) -> bool:
         # Verifica se o slug já está em uso em QUALQUER status (rascunho,
-        # publicado, escondido, agendado). A constraint UNIQUE no banco é sobre
-        # todos os status, então o checador de uniqueness precisa ver todos.
-        # `excluir_id` permite ignorar o próprio artigo num update.
+        # publicado, escondido, agendado).
         stmt = select(func.count()).select_from(Artigo).where(Artigo.slug == slug)
         if excluir_id is not None:
             stmt = stmt.where(Artigo.id != excluir_id)
@@ -113,7 +108,37 @@ class ArtigoRepository:
             Artigo.status == ArtigoStatus.publicado
         )
         return (await self.session.execute(stmt)).scalar_one()
-    
+
+    async def listar_admin(
+        self,
+        skip: int,
+        limit: int,
+        status: ArtigoStatus | None = None,
+        secao_id: int | None = None,
+    ) -> list[Artigo]:
+        # Visão administrativa: enxerga TODOS os status. `status` e `secao_id`
+        # são filtros opcionais — quando None, não restringem o resultado.
+        stmt = select(Artigo)
+        if status is not None:
+            stmt = stmt.where(Artigo.status == status)
+        if secao_id is not None:
+            stmt = stmt.where(Artigo.secao_id == secao_id)
+        stmt = stmt.order_by(Artigo.atualizado_em.desc()).offset(skip).limit(limit)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def contar_admin(
+        self,
+        status: ArtigoStatus | None = None,
+        secao_id: int | None = None,
+    ) -> int:
+        stmt = select(func.count()).select_from(Artigo)
+        if status is not None:
+            stmt = stmt.where(Artigo.status == status)
+        if secao_id is not None:
+            stmt = stmt.where(Artigo.secao_id == secao_id)
+        return (await self.session.execute(stmt)).scalar_one()
+
     async def add(self, artigo: Artigo) -> Artigo:
         self.session.add(artigo)
         await self.session.flush()

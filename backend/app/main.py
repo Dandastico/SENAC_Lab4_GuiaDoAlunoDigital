@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.cms.router import (
     router as artigos_router,
+    admin_artigos_router,
     categorias_router,
     secoes_router
 )
@@ -14,6 +15,7 @@ app.include_router(auth_router)
 app.include_router(categorias_router)
 app.include_router(secoes_router)
 app.include_router(artigos_router)
+app.include_router(admin_artigos_router)
 
 app.add_exception_handler(IntegrityError, integrity_error_handler)
 

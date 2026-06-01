@@ -24,12 +24,14 @@ class ArtigoCreate(ArtigoBase):
 
 class ArtigoUpdate(BaseModel):
     titulo: str | None = Field(default=None, min_length=3, max_length=255)
-    conteudo: str | None = None
+    conteudo: str | None = Field(default=None, min_length=1)
     secao_id: int | None = None
     status: ArtigoStatus | None = None
     agendado_para: datetime | None = None
 
 class ArtigoRead(ArtigoBase):
+    titulo: str
+    conteudo: str
     id: int
     slug: str
     status: ArtigoStatus

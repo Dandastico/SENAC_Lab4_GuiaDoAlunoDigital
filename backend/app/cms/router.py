@@ -5,6 +5,7 @@ from app.db import get_sessao
 from app.security import require_admin
 from app.cms.repository import ArtigoRepository, CategoriaRepository, SecaoRepository
 from app.cms.service import ArtigoService, CategoriaService, SecaoService
+from app.cms.models import ArtigoStatus
 from app.cms.schemas import ArtigoCreate, ArtigoUpdate, ArtigoRead, ArtigoList
 from app.cms.schemas import CategoriaCreate, CategoriaUpdate, CategoriaRead, CategoriaComSecoes
 from app.cms.schemas import SecaoCreate, SecaoUpdate, SecaoRead
@@ -41,8 +42,6 @@ async def criar(
     admin = Depends(require_admin),
     svc: ArtigoService = Depends(_service),
 ):
-    # admin["sub"] vem do JWT como string. ArtigoService.criar espera UUID;
-    # converter explicitamente evita depender da coerção implícita do asyncpg.
     artigo = await svc.criar(dados, autor_id=UUID(admin["sub"]))
     await svc.repo.session.commit()
     return artigo
@@ -75,6 +74,46 @@ async def excluir(
         raise HTTPException(status.HTTP_404_NOT_FOUND)
     await svc.repo.delete(artigo)
     await svc.repo.session.commit()
+
+
+# ===== Artigos (visão administrativa) =====
+# Prefixo /admin/artigos (e não /artigos/admin) para não colidir com a rota
+# pública GET /artigos/{slug}, onde {slug} capturaria "admin" como se fosse slug.
+
+admin_artigos_router = APIRouter(prefix="/admin/artigos", tags=["artigos-admin"])
+
+@admin_artigos_router.get("", response_model=ArtigoList)
+async def listar_admin(
+    status_filtro: ArtigoStatus | None = Query(
+        None, alias="status",
+        description="Filtra por status (rascunho, publicado, escondido, "
+                    "agendado). Vazio = todos os status.",
+    ),
+    secao_id: int | None = Query(None, description="Filtra por seção"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    admin = Depends(require_admin),
+    svc: ArtigoService = Depends(_service),
+):
+    skip = (page - 1) * page_size
+    items = await svc.repo.listar_admin(
+        skip, page_size, status=status_filtro, secao_id=secao_id
+    )
+    total = await svc.repo.contar_admin(status=status_filtro, secao_id=secao_id)
+    return ArtigoList(items=items, total=total, page=page, page_size=page_size)
+
+@admin_artigos_router.get("/{artigo_id}", response_model=ArtigoRead)
+async def obter_admin(
+    artigo_id: int,
+    admin = Depends(require_admin),
+    svc: ArtigoService = Depends(_service),
+):
+    # Aaqui o admin lê o artigo em qualquer status (rascunho/agendado/escondido)
+    # para revisar antes de publicar.
+    artigo = await svc.repo.get(artigo_id)
+    if not artigo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    return artigo
 
 
 # ===== Categorias =====
