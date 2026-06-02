@@ -1,4 +1,5 @@
 import jwt
+from jwt import PyJWKClient
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,17 +10,43 @@ from app.auth.models import PerfilFuncao
 
 bearer = HTTPBearer(auto_error=False)
 
+# Supabase moderno assina os JWT com chaves assimétricas (ES256) e expõe as
+# chaves públicas via JWKS. O cliente faz cache das chaves entre requisições.
+_jwks_client = PyJWKClient(
+    f"{configuracoes.supabase_url}/auth/v1/.well-known/jwks.json",
+    cache_keys=True,
+)
+
 def _decodificar_jwt(token: str) -> dict:
     '''
-    Valida assinatura + audience + issuer + expiração
-    Validar 'iss' impede token assinado por outro projeto Supabase
+    Valida assinatura + audience + issuer + expiração.
+    Validar 'iss' impede token assinado por outro projeto Supabase.
+
+    Escolhe o caminho de validação pelo header 'alg' do token:
+    - HS256: segredo simétrico legado (supabase_jwt_secret)
+    - ES256/RS256: chave pública obtida via JWKS
     '''
-    return jwt.decode(
-        token,
-        configuracoes.supabase_jwt_secret,
-        algorithms=["HS256"],
+    opcoes = dict(
         audience=configuracoes.supabase_jwt_audience,
         issuer=configuracoes.supabase_jwt_issuer,
+    )
+
+    alg = jwt.get_unverified_header(token).get("alg")
+
+    if alg == "HS256":
+        return jwt.decode(
+            token,
+            configuracoes.supabase_jwt_secret,
+            algorithms=["HS256"],
+            **opcoes,
+        )
+
+    chave_assinatura = _jwks_client.get_signing_key_from_jwt(token).key
+    return jwt.decode(
+        token,
+        chave_assinatura,
+        algorithms=["ES256", "RS256"],
+        **opcoes,
     )
 
 

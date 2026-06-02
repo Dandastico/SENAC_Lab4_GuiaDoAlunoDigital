@@ -3,7 +3,7 @@
 from datetime import datetime
 from enum import Enum
 from uuid import UUID
-from sqlalchemy import Text, Integer, SmallInteger, DateTime, ForeignKey, UniqueConstraint, Enum as SAEnum
+from sqlalchemy import Text, Integer, SmallInteger, DateTime, ForeignKey, UniqueConstraint, Enum as SAEnum, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.base import Base
 
@@ -37,8 +37,8 @@ class Artigo(Base):
     )
     agendado_para: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     publicado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    criado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    atualizado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    criado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    atualizado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 # ------------------ Categoria ------------------
 class Categoria(Base):
@@ -50,7 +50,7 @@ class Categoria(Base):
     slug: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     descricao: Mapped[str | None] = mapped_column(Text)
     posicao: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=0)
-    criado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    criado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 # ------------------ Secao ------------------
 class Secao(Base):
@@ -68,4 +68,4 @@ class Secao(Base):
     nome: Mapped[str] = mapped_column(Text, nullable=False)
     slug: Mapped[str] = mapped_column(Text, nullable=False)
     posicao: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=0)
-    criado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    criado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
